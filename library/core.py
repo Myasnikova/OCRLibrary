@@ -25,19 +25,25 @@ def timeit(method):
 
 
 class LabImage:
-    def __init__(self, path=None):
+    def __init__(self, path=None, image=None):
         self.path = path
         self.result = None
 
         if path is not None:
 
             if not os.path.isabs(path):
-                path = os.path.normpath(os.path.join(sys.path[0], path))
+                self.path = os.path.normpath(os.path.join(sys.path[0], path))
 
-            self.orig = Image.open(path).convert("RGB")
+            self.orig = Image.open(self.path).convert("RGB")
             self.size = self.orig.size
             self.height, self.width = self.size
             self.rgb_matrix = np.array(self.orig)
+
+        elif image is not None:
+            self.orig = image.orig
+            self.size = image.size
+            self.height, self.width = image.size
+            self.rgb_matrix = image.rgb_matrix
 
     def read(self, path: str):
         self.path = path
@@ -56,6 +62,10 @@ class LabImage:
     def to_grayscale(self, image):
         new_img = image.convert('L')
         return new_img
+
+    def calc_grayscale_matrix(self):
+        gray_matrix = np.sum(self.rgb_matrix, axis=2) // 3
+        self.grayscale_matrix = gray_matrix
 
     def save(self, name: str):
         if self.result is not None:
