@@ -85,8 +85,17 @@ def draw_segmented_row(img, zones):
 
 # класс для сегментации текстовых изображений
 class TextProfiler(LabImage):
-    def __init__(self, path=None):
-        super().__init__(path)
+    def __init__(self, image=None):
+        super().__init__()
+
+        if image is not None:
+            self.orig = image.orig
+            self.gray_image = image.gray_image
+            self.size = image.orig.size
+            self.height, self.width = self.size
+            self.rgb_matrix = np.array(self.orig)
+            self.path = image.path
+
         new_img = self.orig.convert('L')
         self.work_image = ImageOps.invert(new_img)
         self.letters_coords = []  # координаты букв на изображении
@@ -109,8 +118,8 @@ class TextProfiler(LabImage):
 
 
 def test():
-    text_profile = TextProfiler("pictures_for_test/text.bmp")
+    lab_img = LabImage("pictures_for_test/text.bmp")
+    text_profile = TextProfiler(lab_img)
     text_profile.get_text_segmentation()
-
 
 #test()

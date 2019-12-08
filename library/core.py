@@ -38,6 +38,7 @@ class LabImage:
             self.size = self.orig.size
             self.height, self.width = self.size
             self.rgb_matrix = np.array(self.orig)
+            self.gray_image = self.orig.convert('L')
 
     def read(self, path: str):
         self.path = path
@@ -52,10 +53,6 @@ class LabImage:
             self.orig.show()
         else:
             self.result.show()
-
-    def to_grayscale(self, image):
-        new_img = image.convert('L')
-        return new_img
 
     def save(self, name: str):
         if self.result is not None:

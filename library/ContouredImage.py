@@ -3,20 +3,27 @@ from PIL import Image, ImageDraw
 import numpy as np
 import math
 
+
 # Класс контурированных изображений
-    # Аргументы конструктора:
-    # path: путь до изображения, string
 
 class ContouredImage(LabImage):
-    def __init__(self, path=None):
-        super().__init__(path)
+    def __init__(self,  image=None):
+        super().__init__()
+        if image is not None:
+            self.orig = image.orig
+            self.gray_image = image.gray_image
+            self.size = image.orig.size
+            self.height, self.width = self.size
+            self.rgb_matrix = np.array(self.orig)
+            self.path = image.path
 
-#Оператор Собеля
+    # Оператор Собеля
     # Аргументы:
     # img: изображение, класс Image
     # t: порог, integer
 
-    def sobelOperator(self,img, t):
+    def sobel_operator(self, t):
+        img = self.gray_image
         img_arr = np.asarray(img)
         new_img = img.copy()
         w = new_img.size[0]
@@ -35,13 +42,15 @@ class ContouredImage(LabImage):
         for y in range(h):
             for x in range(w):
                 draw.point((x, y), 255 if grad_matrix_norm[y][x] > t else 0)
+        self.result = new_img
         return new_img
 
-#Оператор Прюита
+    # Оператор Прюита
     # Аргументы:
     # image: изображение, класс Image
 
-    def prewittOperator(self,image):
+    def prewitt_operator(self):
+        image = self.gray_image
         w = image.size[0]
         h = image.size[1]
         pixels = np.array(image, dtype=np.float)
@@ -69,27 +78,16 @@ class ContouredImage(LabImage):
                 mag = np.sqrt(pow(horizontalGrad, 2.0) + pow(verticalGrad, 2.0))
                 newgradientImage[i, j] = mag
         newgradientImage = newgradientImage / np.max(newgradientImage) * 255
-        return Image.fromarray(np.uint8(newgradientImage), 'L')
+        self.result = Image.fromarray(np.uint8(newgradientImage), 'L')
+        return self.result
 
-# Функция выделения контуров на изображении
-# Аргументы:
-    # image: изображение, класс Image
-    # method: метод выделения контуров,1 - оператор Собеля/ 2 - оператор Прюита
-    # t: порог, integer
 
-    def toContouredImage(self,image, method,t=None):
-        if t is None and method == 1:
-            raise ValueError('Undefined threshold: {}'.format(t))
-        gray_image = self.to_grayscale(image)
-        if method == 1:
-            return self.sobelOperator(gray_image,t)
-        if method == 2:
-            return self.prewittOperator(gray_image)
-        raise ValueError('Undefined method: {}'.format(method))
 # Тест
 def test():
-    img = ContouredImage("pictures/cat.bmp")
+    lab_img = LabImage("pictures_for_test/cat.bmp")
+    img = ContouredImage(lab_img)
     img.show()
-    img.toContouredImage(img.orig,2).show()
-    #img.toContouredImage(img.orig,1,25).show()
-test()
+    #img.prewitt_operator().show()
+    img.sobel_operator(25).show()
+
+#test()
