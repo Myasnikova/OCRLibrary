@@ -1,15 +1,39 @@
-from core import *
+from tqdm import tqdm
+from math import ceil
+
+from library.core import *
+from library.exceptions import WrongWindowSize
+
 
 class BinaryImage(LabImage):
-    def __init__(self, Image=None):
-        self.orig = Image.orig
-        self.grayscale_matrix = Image.grayscale_matrix
-        self.size = Image.orig.size
-        self.height, self.width = self.size
-        self.rgb_matrix = np.array(self.orig)
+    def __init__(self, path=None, image=None):
+        super(BinaryImage, self).__init__(path=path, image=image)
 
-    def kir_binarization(self, rsize=3, Rsize=15, eps=15):
-        def otsu_global(matrix: np.ndarray):
+    def eikvil_binarization(self, rsize=3, Rsize=15, eps=15):
+        """
+        Бинаризация изображения методом Эйквила
+
+        :param rsize: размер малого окна
+        :type rsize: int
+        :param Rsize: размер большего окна
+        :type Rsize: int
+        :param eps: величина отклонения для математических ожиданий чёрного и белого, в пределах которого можно считать,
+        что они отличются несущественно
+        :type eps: int
+
+        :return: LabImage -- объект изображения
+
+        :raises: WrongWindowSize
+        """
+        def otsu_global(matrix: np.ndarray) -> tuple:
+            """
+            Глобальная бинаризация методом Отсу
+
+            :param matrix: матрица изображения
+            :type numpy.ndarray
+
+            :return: tuple -- image threshold, black mean, white mean
+            """
             n_curr = 0
             T_res = 0
             M0_res = 0
@@ -37,6 +61,16 @@ class BinaryImage(LabImage):
 
         # @timeit
         def split_submatrix(matrix: np.ndarray, submat1_shape: tuple, submat2_shape: tuple):
+            """
+            Генерирует кортеж из начальных и конечных координат для малого и большего окна
+
+            :param matrix: матрица изображения
+            :type numpy.ndarray
+            :param submat1_shape: размер малого окна
+            :type submat1_shape: tuple
+            :param submat2_shape: размер большего окна
+            :type submat2_shape: tuple
+            """
             p, q = submat1_shape
             P, Q = submat2_shape
             m, n = matrix.shape
@@ -56,7 +90,13 @@ class BinaryImage(LabImage):
                               )
                     )
 
-        def binarization_processor(matrix_ind: tuple, epsilon=eps):
+        def binarization_processor(matrix_ind: tuple):
+            """
+            Бинаризация малого окна по Эйквилу
+
+            :param matrix_ind: кортеж из начальных и конечных координат для малого и большего окна
+            :type matrix_ind: tuple
+            """
             matrix_k_ind, matrix_K_ind = matrix_ind
             matrix_k = self.grayscale_matrix[matrix_k_ind[0][0]: matrix_k_ind[0][1],
                                              matrix_k_ind[1][0]: matrix_k_ind[1][1]]
@@ -64,7 +104,7 @@ class BinaryImage(LabImage):
                                              matrix_K_ind[1][0]: matrix_K_ind[1][1]]
             T, M0, M1 = otsu_global(matrix_K)
 
-            if abs(M1 - M0) >= epsilon:
+            if abs(M1 - M0) >= eps:
                 self.bin_matrix[matrix_k_ind[0][0]: matrix_k_ind[0][1], matrix_k_ind[1][0]: matrix_k_ind[1][1]] = \
                     np.where(matrix_k < T, 0, 255)
             else:
@@ -74,14 +114,14 @@ class BinaryImage(LabImage):
                     .fill(0 if k_mean <= new_T else 255)
 
         if (not (rsize % 2) and not (Rsize % 2)) or ((rsize % 2) and (Rsize % 2)):
-            if self.grayscale_matrix is None:
-                self.to_grayscale()
             self.bin_matrix = self.grayscale_matrix.astype(np.uint8)
-
-            for x in split_submatrix(self.bin_matrix, (rsize, rsize), (Rsize, Rsize)):
+            for x in tqdm(split_submatrix(self.bin_matrix, (rsize, rsize), (Rsize, Rsize)),
+                          total=(ceil(self.bin_matrix.shape[0] / rsize) * ceil(self.bin_matrix.shape[1] / rsize)),
+                          desc='eikvil binarization: '):
                 binarization_processor(x)
-
             self.result = Image.fromarray(self.bin_matrix, 'L')
+
+            return self
 
         else:
             raise WrongWindowSize("Rsize={} and rsize={} must be even or odd both together".format(Rsize, rsize))

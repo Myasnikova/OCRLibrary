@@ -1,43 +1,55 @@
-from PIL import Image
-
-import numpy as np
 from tqdm import tqdm
 
-from core import LabImage, timeit
-from exceptions import WrongWindowSize, WrongRank
+from library.core import *
+from library.exceptions import WrongRank, WrongWindowSize
+
+from library.BinaryImage import BinaryImage
 
 
 class FilteredImage(LabImage):
-    def __init__(self, Image=None):
-        super(FilteredImage, self).__init__(image=Image)
+    """
+    Класс осуществляющий фильтрацию переданного на вход изображения следующими методами:
+        - медианная фильтрация
+        - ранговая фильтрация
+        - взвешанная ранговая фильтрация
+    """
+    def __init__(self, path=None, image=None):
+        """
+        Инициализация объекта класса FilteredImage
+
+        :param path: путь до изображения
+        :type path: str or None
+        :param image: экземпляр класса LabImage
+        :type image: LabImage or None
+        """
+        super(FilteredImage, self).__init__(path=path, image=image)
 
         self.filtered_matrix = None
-        self.calc_grayscale_matrix()
+        if getattr(self, 'bin_matrix', None) is None:
+            self.bin_matrix = BinaryImage(path=path, image=image).eikvil_binarization()
 
-    def median_filter(self):
-        aprt = np.array(([0, 1, 0], [1, 1, 1], [0, 1, 0]))
-        # TODO я в душе не ебу что написано в комментах, поэтому реализую по наитию
-        pixels = np.array(self.orig, dtype=np.float)
-        pixels = pixels / 255
+    def median_filter(self, wsize=3):
+        bias = wsize // 2
+        pixels = self.grayscale_matrix / 255
 
-        right = np.roll(pixels, -1, axis=1)
-        right[:, self.height - 1] = 1
-        left = np.roll(pixels, +1, axis=1)
-        right[:, 0] = 1
-        bottom = np.roll(pixels, -1, axis=0)
-        bottom[self.width - 1, :] = 1
-        upper = np.roll(pixels, +1, axis=0)
-        upper[0, :] = 1
+        right = np.roll(pixels, -bias, axis=1)
+        right[:, -bias:] = pixels[:, -bias:][:, ::-1]
+        left = np.roll(pixels, bias, axis=1)
+        left[:, :bias] = pixels[:, :bias][:, ::-1]
+        bottom = np.roll(pixels, -bias, axis=0)
+        bottom[-bias:, :] = pixels[-bias:, :][::-1]
+        upper = np.roll(pixels, bias, axis=0)
+        upper[:bias, :] = pixels[:bias, :][::-1]
 
-        sum = pixels + right + left + bottom + upper
-        new_pixels = (sum >= 3) * 255
+        filtered_matr = pixels + right + left + bottom + upper
+        filtered_matr = np.where(filtered_matr < wsize, 0, 255)
 
-        self.filtered_matrix = new_pixels
-        self.result = Image.fromarray(np.uint8(new_pixels), 'L')
+        self.filtered_matrix = filtered_matr
+        self.result = Image.fromarray(np.uint8(filtered_matr), 'L')
 
         return self
 
-    def weighted_rank_filter(self, R, f, k):
+    def weighted_rank_filter(self, wsize=3):
         r = R // 2
         # draw = ImageDraw.Draw(new_img)
         for y in range(r, self.height - r):
@@ -65,20 +77,19 @@ class FilteredImage(LabImage):
         if rank >= wsize**2 or rank < 0:
             raise WrongRank("rank must be positive and less than wsize*wsize")
 
-        if self.grayscale_matrix is None:
-            self.to_grayscale()
-
         prepared_matrix = prepare_matrix(self.grayscale_matrix)
         filtered_matrix = np.ndarray(self.grayscale_matrix.shape)
-        for (x, y), _ in tqdm(np.ndenumerate(self.grayscale_matrix), total=self.grayscale_matrix.size):
+        for (x, y), _ in tqdm(np.ndenumerate(self.grayscale_matrix),
+                              total=self.grayscale_matrix.size,
+                              desc='rank filter: '):
             filtered_matrix[x, y] = sorted(prepared_matrix[x: x+wsize, y: y+wsize].flatten())[rank]
 
         self.filtered_matrix = np.uint8(filtered_matrix)
         self.result = Image.fromarray(self.filtered_matrix, 'L')
 
 
-im = LabImage("../sample_1.bmp")
-im = FilteredImage(im)
-im.rank_filter(6, wsize=3)
+im = LabImage("../sample_2.bmp")
+im = FilteredImage(image=im)
+im.median_filter(wsize=3)
 # im.weighted_rank_filter(3, [[1, 2, 1], [2, 4, 2], [1, 2, 1]], 10)
 im.show()

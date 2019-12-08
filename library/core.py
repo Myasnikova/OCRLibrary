@@ -6,7 +6,7 @@ import numpy as np
 
 import time
 
-from exceptions import ResultNotExist
+from library.exceptions import ResultNotExist, NameNotPassed
 
 
 def timeit(method):
@@ -25,9 +25,26 @@ def timeit(method):
 
 
 class LabImage:
+    """
+    Базовый класс для работы с изображением.
+
+    Может быть инициализирован следующими способами:
+        - передачей параметра path
+        - передачей существующего экземпляра класса
+        - иниализация пустыми параметрами с дальнейшим вызовом функции read
+    """
     def __init__(self, path=None, image=None):
+        """
+        Инициализация объекта класса LabImage
+
+        :param path: путь до изображения
+        :type path: str or None
+        :param image: экземпляр класса LabImage
+        :type image: LabImage or None
+        """
         self.path = path
         self.result = None
+        self.grayscale_matrix = None
 
         if path is not None:
 
@@ -39,13 +56,19 @@ class LabImage:
             self.height, self.width = self.size
             self.rgb_matrix = np.array(self.orig)
 
+            self.calc_grayscale_matrix()
+
         elif image is not None:
-            self.orig = image.orig
-            self.size = image.size
-            self.height, self.width = image.size
-            self.rgb_matrix = image.rgb_matrix
+            for k, v in image.__dict__.items():
+                setattr(self, k, v)
 
     def read(self, path: str):
+        """
+        Считывает изображение, расположенное по пути path, и заполняет внутренние переменные класса
+
+        :param path: путь до изображения
+        :type path: str
+        """
         self.path = path
 
         self.orig = Image.open(path).convert("RGB")
@@ -53,7 +76,13 @@ class LabImage:
         self.height, self.width = self.size
         self.rgb_matrix = np.array(self.orig)
 
+        self.calc_grayscale_matrix()
+
     def show(self):
+        """
+        Отображает изображение, сохранённое во внутренней переменной result;
+        при отсутствии такового отображает исходное изображение
+        """
         if self.result is None:
             self.orig.show()
         else:
@@ -64,12 +93,24 @@ class LabImage:
         return new_img
 
     def calc_grayscale_matrix(self):
+        """
+        Производит расчёт полутоновой матрицы исходного изображения и сохраняет её во внутреннюю переменную
+        """
         gray_matrix = np.sum(self.rgb_matrix, axis=2) // 3
         self.grayscale_matrix = gray_matrix
 
     def save(self, name: str):
-        if self.result is not None:
-            self.result.save(name)
+        """
+        Сохраняет изображение из внутренней переменной result под заданным в name именем
+
+        :param name: имя файла, под которым следует сохранить изображение
+        :type name: str
+        """
+        if name != '':
+            if self.result is not None:
+                self.result.save(name)
+            else:
+                raise ResultNotExist("No such results for saving it to {}".format(name))
         else:
-            raise ResultNotExist("No such results for saving it to {}".format(name))
+            raise NameNotPassed("Name of file must contain some symbols")
 
