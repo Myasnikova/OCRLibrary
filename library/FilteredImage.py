@@ -26,11 +26,21 @@ class FilteredImage(LabImage):
 
         self.filtered_matrix = None
         if getattr(self, 'bin_matrix', None) is None:
-            self.bin_matrix = BinaryImage(path=path, image=image).eikvil_binarization()
+            # TODO надо бы выбрать способ бинаризации по умолчанию
+            self.bin_matrix = BinaryImage(path=path, image=image).eikvil_binarization().bin_matrix
+            # self.bin_matrix = self.grayscale_matrix
 
     def median_filter(self, wsize=3):
+        """
+        Медианная фильтрация изображения
+
+        :param wsize: размер окна фильтрации
+        :type wsize: int
+
+        :return: LabImage -- объект изображения
+        """
         bias = wsize // 2
-        pixels = self.grayscale_matrix / 255
+        pixels = self.bin_matrix / 255
 
         right = np.roll(pixels, -bias, axis=1)
         right[:, -bias:] = pixels[:, -bias:][:, ::-1]
@@ -49,21 +59,72 @@ class FilteredImage(LabImage):
 
         return self
 
-    def weighted_rank_filter(self, wsize=3):
-        r = R // 2
-        # draw = ImageDraw.Draw(new_img)
-        for y in range(r, self.height - r):
-            for x in range(r, self.width - r):
-                arr_pix = self.rgb_matrix[x - r: x + r + 1, y - r: y + r + 1]
-                # black_pix_amount = np.sum(arr_pix)
-                black_pix_amount = np.sum(f * arr_pix)
-                if black_pix_amount >= k:
-                    draw.point((x, y), True)
-                else:
-                    draw.point((x, y), False)
-        return new_img
+    def weighted_rank_filter(self, rank: int, wsize=3):
+        """
+        Взвешенная ранговая фильтрация изображения
+
+        :param rank: ранг фильтра
+        :type rank: int
+        :param wsize: размер окна фильтрации (поддерживаются только окна размера 3 или 5)
+        :type wsize: int
+
+        :return: LabImage -- объект изображения
+
+        :raises: WrongWindowSize
+        """
+        def prepare_matrix(matrix: np.ndarray):
+            bias = wsize // 2
+            new_matrix = np.vstack((matrix[1:(bias + 1)][::-1], matrix, matrix[-(bias + 1):-1][::-1]))
+            new_matrix = np.hstack((new_matrix[:, 1:(bias + 1)][:, ::-1], new_matrix, new_matrix[:, -(bias + 1):-1][:, ::-1]))
+
+            return new_matrix
+
+        def custom_multiply(orig_matr: np.ndarray):
+            res = []
+            for k in range(orig_matr.size):
+                res = res + [orig_matr.flatten()[k]] * mask.flatten()[k]
+
+            return res
+
+        w_3 = np.array([[1, 2, 1],
+                        [2, 4, 2],
+                        [1, 2, 1]])
+        w_5 = np.array([[0, 0, 1, 0, 0],
+                        [0, 2, 4, 2, 0],
+                        [1, 4, 8, 4, 1],
+                        [0, 2, 4, 2, 0],
+                        [0, 0, 1, 0, 0]])
+
+        if wsize not in (3, 5):
+            raise WrongWindowSize("wsize must be only 3 or 5")
+        elif wsize == 3:
+            mask = w_3
+        else:
+            mask = w_5
+
+        prepared_matrix = prepare_matrix(self.bin_matrix) // 255
+        filtered_matrix = np.ndarray(self.bin_matrix.shape)
+        for (x, y), _ in tqdm(np.ndenumerate(self.bin_matrix),
+                              total=self.bin_matrix.size,
+                              desc='rank filter: '):
+            filtered_matrix[x, y] = sorted(custom_multiply(prepared_matrix[x: x + wsize, y: y + wsize]))[rank]
+
+        self.filtered_matrix = np.uint8(filtered_matrix) * 255
+        self.result = Image.fromarray(self.filtered_matrix, 'L')
+
+        return self
 
     def rank_filter(self, rank: int, wsize=3):
+        """
+        Невзвешенная ранговая фильтрация изображения
+
+        :param rank: ранг фильтра
+        :type rank: int
+        :param wsize: размер окна фильтрации (поддерживаются только окна размера 3 или 5)
+        :type wsize: int
+
+        :return: LabImage -- объект изображения
+        """
         def prepare_matrix(matrix: np.ndarray):
             bias = wsize // 2
             new_matrix = np.vstack((matrix[1:(bias + 1)][::-1], matrix, matrix[-(bias + 1):-1][::-1]))
@@ -77,19 +138,21 @@ class FilteredImage(LabImage):
         if rank >= wsize**2 or rank < 0:
             raise WrongRank("rank must be positive and less than wsize*wsize")
 
-        prepared_matrix = prepare_matrix(self.grayscale_matrix)
-        filtered_matrix = np.ndarray(self.grayscale_matrix.shape)
-        for (x, y), _ in tqdm(np.ndenumerate(self.grayscale_matrix),
-                              total=self.grayscale_matrix.size,
+        prepared_matrix = prepare_matrix(self.bin_matrix)
+        filtered_matrix = np.ndarray(self.bin_matrix.shape)
+        for (x, y), _ in tqdm(np.ndenumerate(self.bin_matrix),
+                              total=self.bin_matrix.size,
                               desc='rank filter: '):
             filtered_matrix[x, y] = sorted(prepared_matrix[x: x+wsize, y: y+wsize].flatten())[rank]
 
         self.filtered_matrix = np.uint8(filtered_matrix)
         self.result = Image.fromarray(self.filtered_matrix, 'L')
 
+        return self
+
 
 im = LabImage("../sample_2.bmp")
 im = FilteredImage(image=im)
-im.median_filter(wsize=3)
+im.weighted_rank_filter(10, wsize=3)
 # im.weighted_rank_filter(3, [[1, 2, 1], [2, 4, 2], [1, 2, 1]], 10)
 im.show()
