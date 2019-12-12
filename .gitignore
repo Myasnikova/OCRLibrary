@@ -110,3 +110,4 @@ venv.bak/
 # my own ignore
 .DS_Store
 *.bmp
+*.csv
