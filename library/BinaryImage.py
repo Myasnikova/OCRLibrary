@@ -1,15 +1,39 @@
+from tqdm import tqdm
+from math import ceil
+
 from core import *
+from exceptions import WrongWindowSize
+
 
 class BinaryImage(LabImage):
-    def __init__(self, Image=None):
-        self.orig =  Image.orig
-        self.grayscale_matrix = Image.grayscale_matrix
-        self.size = Image.orig.size
-        self.height, self.width = self.size
-        self.rgb_matrix = np.array(self.orig)
+    def __init__(self, path=None, image=None):
+        super(BinaryImage, self).__init__(path=path, image=image)
 
-    def kir_binarization(self, rsize=3, Rsize=15, eps=15):
-        def otsu_global(matrix: np.ndarray):
+    def eikvil_binarization(self, rsize=3, Rsize=15, eps=15):
+        """
+        –ë–∏–Ω–∞—Ä–∏–∑–∞—Ü–∏—è –∏–∑–æ–±—Ä–∞–∂–µ–Ω–∏—è –º–µ—Ç–æ–¥–æ–º –≠–π–∫–≤–∏–ª–∞
+
+        :param rsize: —Ä–∞–∑–º–µ—Ä –º–∞–ª–æ–≥–æ –æ–∫–Ω–∞
+        :type rsize: int
+        :param Rsize: —Ä–∞–∑–º–µ—Ä –±–æ–ª—å—à–µ–≥–æ –æ–∫–Ω–∞
+        :type Rsize: int
+        :param eps: –≤–µ–ª–∏—á–∏–Ω–∞ –æ—Ç–∫–ª–æ–Ω–µ–Ω–∏—è –¥–ª—è –º–∞—Ç–µ–º–∞—Ç–∏—á–µ—Å–∫–∏—Ö –æ–∂–∏–¥–∞–Ω–∏–π —á—ë—Ä–Ω–æ–≥–æ –∏ –±–µ–ª–æ–≥–æ, –≤ –ø—Ä–µ–¥–µ–ª–∞—Ö –∫–æ—Ç–æ—Ä–æ–≥–æ –º–æ–∂–Ω–æ —Å—á–∏—Ç–∞—Ç—å,
+        —á—Ç–æ –æ–Ω–∏ –æ—Ç–ª–∏—á—é—Ç—Å—è –Ω–µ—Å—É—â–µ—Å—Ç–≤–µ–Ω–Ω–æ
+        :type eps: int
+
+        :return: LabImage -- –æ–±—ä–µ–∫—Ç –∏–∑–æ–±—Ä–∞–∂–µ–Ω–∏—è
+
+        :raises: WrongWindowSize
+        """
+        def otsu_global(matrix: np.ndarray) -> tuple:
+            """
+            –ì–ª–æ–±–∞–ª—å–Ω–∞—è –±–∏–Ω–∞—Ä–∏–∑–∞—Ü–∏—è –º–µ—Ç–æ–¥–æ–º –û—Ç—Å—É
+
+            :param matrix: –º–∞—Ç—Ä–∏—Ü–∞ –∏–∑–æ–±—Ä–∞–∂–µ–Ω–∏—è
+            :type numpy.ndarray
+
+            :return: tuple -- image threshold, black mean, white mean
+            """
             n_curr = 0
             T_res = 0
             M0_res = 0
@@ -37,6 +61,16 @@ class BinaryImage(LabImage):
 
         # @timeit
         def split_submatrix(matrix: np.ndarray, submat1_shape: tuple, submat2_shape: tuple):
+            """
+            –ì–µ–Ω–µ—Ä–∏—Ä—É–µ—Ç –∫–æ—Ä—Ç–µ–∂ –∏–∑ –Ω–∞—á–∞–ª—å–Ω—ã—Ö –∏ –∫–æ–Ω–µ—á–Ω—ã—Ö –∫–æ–æ—Ä–¥–∏–Ω–∞—Ç –¥–ª—è –º–∞–ª–æ–≥–æ –∏ –±–æ–ª—å—à–µ–≥–æ –æ–∫–Ω–∞
+
+            :param matrix: –º–∞—Ç—Ä–∏—Ü–∞ –∏–∑–æ–±—Ä–∞–∂–µ–Ω–∏—è
+            :type numpy.ndarray
+            :param submat1_shape: —Ä–∞–∑–º–µ—Ä –º–∞–ª–æ–≥–æ –æ–∫–Ω–∞
+            :type submat1_shape: tuple
+            :param submat2_shape: —Ä–∞–∑–º–µ—Ä –±–æ–ª—å—à–µ–≥–æ –æ–∫–Ω–∞
+            :type submat2_shape: tuple
+            """
             p, q = submat1_shape
             P, Q = submat2_shape
             m, n = matrix.shape
@@ -56,7 +90,13 @@ class BinaryImage(LabImage):
                               )
                     )
 
-        def binarization_processor(matrix_ind: tuple, epsilon=eps):
+        def binarization_processor(matrix_ind: tuple):
+            """
+            –ë–∏–Ω–∞—Ä–∏–∑–∞—Ü–∏—è –º–∞–ª–æ–≥–æ –æ–∫–Ω–∞ –ø–æ –≠–π–∫–≤–∏–ª—É
+
+            :param matrix_ind: –∫–æ—Ä—Ç–µ–∂ –∏–∑ –Ω–∞—á–∞–ª—å–Ω—ã—Ö –∏ –∫–æ–Ω–µ—á–Ω—ã—Ö –∫–æ–æ—Ä–¥–∏–Ω–∞—Ç –¥–ª—è –º–∞–ª–æ–≥–æ –∏ –±–æ–ª—å—à–µ–≥–æ –æ–∫–Ω–∞
+            :type matrix_ind: tuple
+            """
             matrix_k_ind, matrix_K_ind = matrix_ind
             matrix_k = self.grayscale_matrix[matrix_k_ind[0][0]: matrix_k_ind[0][1],
                                              matrix_k_ind[1][0]: matrix_k_ind[1][1]]
@@ -64,7 +104,7 @@ class BinaryImage(LabImage):
                                              matrix_K_ind[1][0]: matrix_K_ind[1][1]]
             T, M0, M1 = otsu_global(matrix_K)
 
-            if abs(M1 - M0) >= epsilon:
+            if abs(M1 - M0) >= eps:
                 self.bin_matrix[matrix_k_ind[0][0]: matrix_k_ind[0][1], matrix_k_ind[1][0]: matrix_k_ind[1][1]] = \
                     np.where(matrix_k < T, 0, 255)
             else:
@@ -74,56 +114,69 @@ class BinaryImage(LabImage):
                     .fill(0 if k_mean <= new_T else 255)
 
         if (not (rsize % 2) and not (Rsize % 2)) or ((rsize % 2) and (Rsize % 2)):
-            if self.grayscale_matrix is None:
-                self.to_grayscale()
             self.bin_matrix = self.grayscale_matrix.astype(np.uint8)
-
-            for x in split_submatrix(self.bin_matrix, (rsize, rsize), (Rsize, Rsize)):
+            for x in tqdm(split_submatrix(self.bin_matrix, (rsize, rsize), (Rsize, Rsize)),
+                          total=(ceil(self.bin_matrix.shape[0] / rsize) * ceil(self.bin_matrix.shape[1] / rsize)),
+                          desc='eikvil binarization: '):
                 binarization_processor(x)
-
             self.result = Image.fromarray(self.bin_matrix, 'L')
+
+            return self
 
         else:
             raise WrongWindowSize("Rsize={} and rsize={} must be even or odd both together".format(Rsize, rsize))
 
-
-        #ÔËÌËÏ‡ÂÚ np.array, ‚ÓÁ‚‡˘‡ÂÚ ËÌÚÂ„‡Î¸Ì˚È np.array. ÃÓÊÌÓ Ò‰ÂÎ‡Ú¸ ÒÂ‰ÒÚ‚‡ÏË ÌÛÏÔ‡ˇ ‚ Ó‰ÌÛ ÒÚÓÍÛ, ÌÓ ÔÛÒÚ¸ ·Û‰ÂÚ Û˜ÌÓÈ
     def calc_integ(self, img):
+         """
+         –†–∞—Å—á–µ—Ç –∏–Ω—Ç–µ–≥—Ä–∞–ª—å–Ω–æ–≥–æ –∏–∑–æ–±—Ä–∞–∂–µ–Ω–∏—è –∏–∑ –∏—Å—Ö–æ–¥–Ω–æ–≥–æ
+
+         :param img: –º–∞—Ç—Ä–∏—Ü–∞ –∏–∑–æ–±—Ä–∞–∂–µ–Ω–∏—è
+         :type img: numpy.ndarray
+         """
          h, w = img.shape
          integr = np.zeros((h, w),  np.float)
-         #ÒÌ‡˜‡Î‡ ÔÓÒ˜ËÚ‡ÂÏ ‰Îˇ ÔÂ‚Ó„Ó ÒÚÓÎ·ˆ‡ Ë ÔÂ‚ÓÈ ÒÚÓÍË, ˜ÚÓ· ÌÂ ‚˚ıÓ‰ËÚ¸ Á‡ „‡ÌËˆ˚ ‚ ÂÍÛÒË‚ÌÓÈ ÙÓÏÛÎÂ
+         #—Å–Ω–∞—á–∞–ª–∞ –ø–æ—Å—á–∏—Ç–∞–µ–º –¥–ª—è –ø–µ—Ä–≤–æ–≥–æ —Å—Ç–æ–ª–±—Ü–∞ –∏ –ø–µ—Ä–≤–æ–π —Å—Ç—Ä–æ–∫–∏, —á—Ç–æ–± –Ω–µ –≤—ã—Ö–æ–¥–∏—Ç—å –∑–∞ –≥—Ä–∞–Ω–∏—Ü—ã –≤ —Ä–µ–∫—É—Ä—Å–∏–≤–Ω–æ–π —Ñ–æ—Ä–º—É–ª–µ
          integr[0, :] = np.cumsum(img[0, :])
          integr[:, 0] = np.cumsum(img[:, 0])
-         #ÂÍÛÒË‚Ì‡ˇ ÙÓÏÛÎ‡, 20 ÒÎ‡È‰
+         #—Ä–µ–∫—É—Ä—Å–∏–≤–Ω–∞—è —Ñ–æ—Ä–º—É–ª–∞, 20 —Å–ª–∞–π–¥
          for y in range(1,h):
              for x in range(1,w):
                  integr[y,x] = img[y,x] - integr[y-1,x-1] + integr[y-1,x] + integr[y,x-1]
          return integr
+         
 
     def cristian_binarisation(self, w_size=15, k=0.5):
-        if self.grayscale_matrix is None:
-                self.to_grayscale()
-        rows, cols = self.grayscale_matrix.shape
-        pix = self.grayscale_matrix #‚˚„ÛÊ‡ÂÏ ‚ np.array
+        """
+        –ë–∏–Ω–∞—Ä–∏–∑–∞—Ü–∏—è –∏–∑–æ–±—Ä–∞–∂–µ–Ω–∏—è –º–µ—Ç–æ–¥–æ–º –ö—Ä–∏—Å—Ç–∏–∞–Ω–∞
 
-        integr = self.calc_integ(pix) #Ò˜ËÚ‡ÂÏ ËÌÚÂ„‡Î¸ÌÓÂ ËÁÓ·‡ÊÂÌËÂ
-        sqr_integr = self.calc_integ(np.square(pix)) #ÚÓ ÊÂ Ò‡ÏÓÂ, ÌÓ ÛÊÂ Í‚‡‰‡Ú˚
+        :param w_size: —Ä–∞–∑–º–µ—Ä –æ–∫–Ω–∞
+        :type w_size: int
+        :param k: –∫–æ—ç—Ñ—Ñ–∏—Ü–∏–µ–Ω—Ç, –æ—Ç–≤–µ—á–∞—é—â–∏–π –∑–∞ —á—É–≤—Å—Ç–≤–∏—Ç–µ–ª—å–Ω–æ—Å—Ç—å –±–∏–Ω–∞—Ä–∏–∑–∞—Ç–æ—Ä–∞
+        :type k: int
+        """
+        if self.grayscale_matrix is None:
+                self.calc_grayscale_matrix()
+        rows, cols = self.grayscale_matrix.shape
+        pix = self.grayscale_matrix 
+
+        integr = self.calc_integ(pix) 
+        sqr_integr = self.calc_integ(np.square(pix)) 
 
         half_w = w_size // 2
  
-        #ÒÂÈ˜‡Ò ·Û‰ÛÚ Ï‡„Ë˜ÂÒÍËÂ ‚Â˘Ë: Ò‰ÂÎ‡ÂÏ Ï‡ÒÒË‚, ‚ ÍÓÚÓÓÏ ‰Îˇ Í‡Ê‰Ó„Ó ÔËÍÒÂÎˇ ·Û‰ÛÚ ËÌ‰ÂÍÒ˚ „‡ÌËˆ˚ ÓÍÌ‡
-        #ˇ Ò‡Ï ÌÂÏÌÓ„Ó Û‰Ë‚ÎÂÌ, ˜ÚÓ ˝ÚÓ ‡·ÓÚ‡ÂÚ, ÌÓ ˝ÚÓ ‡·ÓÚ‡ÂÚ!
+        #—Å–µ–π—á–∞—Å –±—É–¥—É—Ç –º–∞–≥–∏—á–µ—Å–∫–∏–µ –≤–µ—â–∏: —Å–¥–µ–ª–∞–µ–º –º–∞—Å—Å–∏–≤, –≤ –∫–æ—Ç–æ—Ä–æ–º –¥–ª—è –∫–∞–∂–¥–æ–≥–æ –ø–∏–∫—Å–µ–ª—è –±—É–¥—É—Ç –∏–Ω–¥–µ–∫—Å—ã –≥—Ä–∞–Ω–∏—Ü—ã –æ–∫–Ω–∞
+        #—è —Å–∞–º –Ω–µ–º–Ω–æ–≥–æ —É–¥–∏–≤–ª–µ–Ω, —á—Ç–æ —ç—Ç–æ —Ä–∞–±–æ—Ç–∞–µ—Ç, –Ω–æ —ç—Ç–æ —Ä–∞–±–æ—Ç–∞–µ—Ç!        
         x, y = np.meshgrid(np.arange(0, cols), np.arange(0, rows))
     
-        x1 = (x - half_w).clip(0, cols-1) #ÎÂ‚‡ˇ „‡ÌËˆ‡ ÔÓ x
-        x2 = (x + half_w).clip(0, cols-1) #Ô‡‚‡ˇ „‡ÌËˆ‡ ÔÓ ı
-        y1 = (y - half_w).clip(0, rows-1) #ÎÂ‚‡ˇ „‡ÌËˆ‡ ÔÓ y
-        y2 = (y + half_w).clip(0, rows-1) #Ô‡‚‡ˇ „‡ÌËˆ‡ ÔÓ y
+        x1 = (x - half_w).clip(0, cols-1) #–ª–µ–≤–∞—è –≥—Ä–∞–Ω–∏—Ü–∞ –ø–æ x
+        x2 = (x + half_w).clip(0, cols-1) #–ø—Ä–∞–≤–∞—è –≥—Ä–∞–Ω–∏—Ü–∞ –ø–æ —Ö
+        y1 = (y - half_w).clip(0, rows-1) #–ª–µ–≤–∞—è –≥—Ä–∞–Ω–∏—Ü–∞ –ø–æ y
+        y2 = (y + half_w).clip(0, rows-1) #–ø—Ä–∞–≤–∞—è –≥—Ä–∞–Ω–∏—Ü–∞ –ø–æ y
 
-        # ÔÎÓ˘‡‰¸ ÓÍÌ‡ ‰Îˇ Í‡Ê‰Ó„Ó ÔËÍÒÂÎˇ. ¡Û‰ÂÚ ‰Û„‡ˇ Û „‡ÌË˜Ì˚ı, ÔÓ˝ÚÓÏÛ ˝ÚÓ ÚÛÚ
+        # –ø–ª–æ—â–∞–¥—å –æ–∫–Ω–∞ –¥–ª—è –∫–∞–∂–¥–æ–≥–æ –ø–∏–∫—Å–µ–ª—è. –ë—É–¥–µ—Ç –¥—Ä—É–≥–∞—è —É –≥—Ä–∞–Ω–∏—á–Ω—ã—Ö, –ø–æ—ç—Ç–æ–º—É —ç—Ç–æ —Ç—É—Ç
         s = (y2 - y1 + 1) * (x2 - x1 + 1)
 
-        #Ò˜ËÚ‡ÂÏ ÒÂ‰ÌÂÂ ÁÌ‡˜ÂÌËÂ
+        
         sums = np.zeros((rows, cols),  np.float)
         for y in range(0,rows):
             for x in range(0,cols):
@@ -131,18 +184,20 @@ class BinaryImage(LabImage):
 
         means = sums / s
 
-        #Ò˜ËÚ‡ÂÏ ÓÚÍÎÓÌÂÌËÂ
+       
         dev_sums = np.zeros((rows, cols),  np.float)
         for y in range(0,rows):
             for x in range(0,cols):
                 dev_sums[y,x] = sqr_integr[y2[y,x], x2[y,x]] - sqr_integr[y2[y,x], x1[y,x]] - sqr_integr[y1[y,x], x2[y,x]] + sqr_integr[y1[y,x] , x1[y,x]] # 0_O [2]
         devs = np.sqrt(dev_sums / s - np.square(means))
 
-        # ÏËÌËÏ‡Î¸Ì˚Â Ë Ï‡ÍÒËÏ‡Î¸Ì˚Â (????)
+        
         R = np.max(devs)
         M = np.min(self.grayscale_matrix)
 
-        # Ò˜ËÚ‡ÂÏ ÔÓÓ„
+        
         thresholds = ((1.0 - k) * means + k * M + k * devs / R * (means - M))
-        img = ((self.grayscale_matrix >= thresholds) * 255).astype(np.uint8) #255, ÂÒÎË ·ÓÎ¸¯Â, 0 ÂÒÎË ÏÂÌ¸¯Â
+        img = ((self.grayscale_matrix >= thresholds) * 255).astype(np.uint8) #255, –µ—Å–ª–∏ –±–æ–ª—å—à–µ, 0 –µ—Å–ª–∏ –º–µ–Ω—å—à–µ
         self.result = Image.fromarray(np.uint8(img) , 'L')
+        self.bin_matrix = img
+        return self
