@@ -1,8 +1,8 @@
 from tqdm import tqdm
 from math import ceil
 
-from library.core import *
-from library.exceptions import WrongWindowSize
+from core import *
+from exceptions import WrongWindowSize
 
 
 class BinaryImage(LabImage):
@@ -126,44 +126,57 @@ class BinaryImage(LabImage):
         else:
             raise WrongWindowSize("Rsize={} and rsize={} must be even or odd both together".format(Rsize, rsize))
 
-
-        #��������� np.array, ���������� ������������ np.array. ����� ������� ���������� ������ � ���� �����, �� ����� ����� ������
     def calc_integ(self, img):
+         """
+         Расчет интегрального изображения из исходного
+
+         :param img: матрица изображения
+         :type img: numpy.ndarray
+         """
          h, w = img.shape
          integr = np.zeros((h, w),  np.float)
-         #������� ��������� ��� ������� ������� � ������ ������, ���� �� �������� �� ������� � ����������� �������
+         #сначала посчитаем для первого столбца и первой строки, чтоб не выходить за границы в рекурсивной формуле
          integr[0, :] = np.cumsum(img[0, :])
          integr[:, 0] = np.cumsum(img[:, 0])
-         #����������� �������, 20 �����
+         #рекурсивная формула, 20 слайд
          for y in range(1,h):
              for x in range(1,w):
                  integr[y,x] = img[y,x] - integr[y-1,x-1] + integr[y-1,x] + integr[y,x-1]
          return integr
+         
 
     def cristian_binarisation(self, w_size=15, k=0.5):
-        if self.grayscale_matrix is None:
-                self.to_grayscale()
-        rows, cols = self.grayscale_matrix.shape
-        pix = self.grayscale_matrix #��������� � np.array
+        """
+        Бинаризация изображения методом Кристиана
 
-        integr = self.calc_integ(pix) #������� ������������ �����������
-        sqr_integr = self.calc_integ(np.square(pix)) #�� �� �����, �� ��� ��������
+        :param w_size: размер окна
+        :type w_size: int
+        :param k: коэффициент, отвечающий за чувствительность бинаризатора
+        :type k: int
+        """
+        if self.grayscale_matrix is None:
+                self.calc_grayscale_matrix()
+        rows, cols = self.grayscale_matrix.shape
+        pix = self.grayscale_matrix 
+
+        integr = self.calc_integ(pix) 
+        sqr_integr = self.calc_integ(np.square(pix)) 
 
         half_w = w_size // 2
  
-        #������ ����� ���������� ����: ������� ������, � ������� ��� ������� ������� ����� ������� ������� ����
-        #� ��� ������� �������, ��� ��� ��������, �� ��� ��������!
+        #сейчас будут магические вещи: сделаем массив, в котором для каждого пикселя будут индексы границы окна
+        #я сам немного удивлен, что это работает, но это работает!        
         x, y = np.meshgrid(np.arange(0, cols), np.arange(0, rows))
     
-        x1 = (x - half_w).clip(0, cols-1) #����� ������� �� x
-        x2 = (x + half_w).clip(0, cols-1) #������ ������� �� �
-        y1 = (y - half_w).clip(0, rows-1) #����� ������� �� y
-        y2 = (y + half_w).clip(0, rows-1) #������ ������� �� y
+        x1 = (x - half_w).clip(0, cols-1) #левая граница по x
+        x2 = (x + half_w).clip(0, cols-1) #правая граница по х
+        y1 = (y - half_w).clip(0, rows-1) #левая граница по y
+        y2 = (y + half_w).clip(0, rows-1) #правая граница по y
 
-        # ������� ���� ��� ������� �������. ����� ������ � ���������, ������� ��� ���
+        # площадь окна для каждого пикселя. Будет другая у граничных, поэтому это тут
         s = (y2 - y1 + 1) * (x2 - x1 + 1)
 
-        #������� ������� ��������
+        
         sums = np.zeros((rows, cols),  np.float)
         for y in range(0,rows):
             for x in range(0,cols):
@@ -171,18 +184,20 @@ class BinaryImage(LabImage):
 
         means = sums / s
 
-        #������� ����������
+       
         dev_sums = np.zeros((rows, cols),  np.float)
         for y in range(0,rows):
             for x in range(0,cols):
                 dev_sums[y,x] = sqr_integr[y2[y,x], x2[y,x]] - sqr_integr[y2[y,x], x1[y,x]] - sqr_integr[y1[y,x], x2[y,x]] + sqr_integr[y1[y,x] , x1[y,x]] # 0_O [2]
         devs = np.sqrt(dev_sums / s - np.square(means))
 
-        # ����������� � ������������ (????)
+        
         R = np.max(devs)
         M = np.min(self.grayscale_matrix)
 
-        # ������� �����
+        
         thresholds = ((1.0 - k) * means + k * M + k * devs / R * (means - M))
-        img = ((self.grayscale_matrix >= thresholds) * 255).astype(np.uint8) #255, ���� ������, 0 ���� ������
+        img = ((self.grayscale_matrix >= thresholds) * 255).astype(np.uint8) #255, если больше, 0 если меньше
         self.result = Image.fromarray(np.uint8(img) , 'L')
+        self.bin_matrix = img
+        return self

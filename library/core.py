@@ -6,7 +6,7 @@ import numpy as np
 
 import time
 
-from library.exceptions import ResultNotExist, NameNotPassed
+from exceptions import ResultNotExist, NameNotPassed
 
 
 def timeit(method):
@@ -33,7 +33,7 @@ class LabImage:
         - передачей существующего экземпляра класса
         - иниализация пустыми параметрами с дальнейшим вызовом функции read
     """
-    def __init__(self, path=None, image=None):
+    def __init__(self, path=None, image=None, pilImage=None):
         """
         Инициализация объекта класса LabImage
 
@@ -51,17 +51,23 @@ class LabImage:
             if not os.path.isabs(path):
                 self.path = os.path.normpath(os.path.join(sys.path[0], path))
 
-            self.orig = Image.open(self.path).convert("RGB")
+            self.orig = Image.open(path).convert("RGB")
             self.size = self.orig.size
             self.height, self.width = self.size
             self.rgb_matrix = np.array(self.orig)
             self.gray_image = self.orig.convert('L')
-
             self.calc_grayscale_matrix()
 
         elif image is not None:
             for k, v in image.__dict__.items():
                 setattr(self, k, v)
+        elif pilImage is not None:
+            self.orig = pilImage
+            self.size = self.orig.size
+            self.height, self.width = self.size
+            self.rgb_matrix = np.array(self.orig)
+            self.gray_image = self.orig.convert('L')
+            self.calc_grayscale_matrix()
 
     def read(self, path: str):
         """
@@ -89,13 +95,18 @@ class LabImage:
         else:
             self.result.show()
 
-
+    def to_grayscale(self, image):
+        new_img = image.convert('L')
+        return new_img
 
     def calc_grayscale_matrix(self):
         """
         Производит расчёт полутоновой матрицы исходного изображения и сохраняет её во внутреннюю переменную
         """
-        gray_matrix = np.sum(self.rgb_matrix, axis=2) // 3
+        if(len(self.rgb_matrix.shape)>2):
+            gray_matrix = np.sum(self.rgb_matrix, axis=2) // 3
+        else:
+             gray_matrix = self.rgb_matrix 
         self.grayscale_matrix = gray_matrix
 
     def save(self, name: str):

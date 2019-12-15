@@ -114,7 +114,7 @@ class TextProfiler(LabImage):
             draw_segmented_row(self.result, letters_in_row)
             self.letters_coords.append(letters_in_row)
         # self.result.show()
-        return self.letters_coords
+        return self
 
 
 def test():
