@@ -1,10 +1,7 @@
-from pathlib import Path
-
 from PIL import Image, ImageFont, ImageDraw
 import numpy as np
 
 import csv
-from itertools import chain
 
 from library.core import LabImage
 from library.BinaryImage import BinaryImage
@@ -67,11 +64,21 @@ class FontCharacteristics:
             mw, mh = self.symbol_size
             w, h = d.textsize(sym, font=f)
             d.text((((mw - w) // 2), (mh - h) // 2), sym, font=f)
-            im.save(sym + '.bmp')
+            if sym.isupper() and not sym.islower():
+                im.save(sym + '_upper.bmp')
+            elif sym.islower() and not sym.isupper():
+                im.save(sym.upper() + '_lower.bmp')
+            else:
+                im.save(sym + '.bmp')
 
     def calc_characteristics(self):
         for sym in self.symbol_list:
-            im = SymbolImage(sym + '.bmp')
+            if sym.isupper() and not sym.islower():
+                im = SymbolImage(sym + '_upper.bmp')
+            elif sym.islower() and not sym.isupper():
+                im = SymbolImage(sym.upper() + '_lower.bmp')
+            else:
+                im = SymbolImage(sym + '.bmp')
             self.symbol_characteristics[sym] = im.calc_characteristics()
 
         return self
@@ -101,4 +108,4 @@ class FontCharacteristics:
             raise NameNotPassed("Name of file must contain some symbols")
 
 
-# FontCharacteristics("АБВГДЕ").calc_characteristics().to_csv('result.csv')
+FontCharacteristics("ABCabc+=jJ").calc_characteristics().to_csv('result.csv')
