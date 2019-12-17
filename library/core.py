@@ -55,6 +55,7 @@ class LabImage:
             self.size = self.orig.size
             self.height, self.width = self.size
             self.rgb_matrix = np.array(self.orig)
+            self.gray_image = self.orig.convert('L')
 
             self.calc_grayscale_matrix()
 
@@ -88,9 +89,7 @@ class LabImage:
         else:
             self.result.show()
 
-    def to_grayscale(self, image):
-        new_img = image.convert('L')
-        return new_img
+
 
     def calc_grayscale_matrix(self):
         """
