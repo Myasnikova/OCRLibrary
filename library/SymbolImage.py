@@ -1,10 +1,7 @@
-from pathlib import Path
-
 from PIL import Image, ImageFont, ImageDraw, ImageOps
 import numpy as np
 
 import csv
-from itertools import chain
 
 from library.core import LabImage
 from library.BinaryImage import BinaryImage
@@ -23,35 +20,25 @@ class SymbolImage(LabImage):
             self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
             #self.bin_matrix = self.grayscale_matrix
 
-
-    def get_norm(self):
-        nm = np.ones((self.height, self.width), dtype=float)
-        weight = np.sum(nm)
-        x_center = np.sum([x * f for (x, y), f in np.ndenumerate(nm)]) // weight
-        y_center = np.sum([y * f for (x, y), f in np.ndenumerate(nm)]) // weight
-        x_moment = np.sum([f * (x - x_center) ** 2 for (x, y), f in np.ndenumerate(nm)])
-        y_moment = np.sum([f * (y - y_center) ** 2 for (x, y), f in np.ndenumerate(nm)])
-        return (x_moment, y_moment)
-
-
     def calc_characteristics(self):
         m, n = self.bin_matrix.shape
+        inv_bin_matrix = np.where((self.bin_matrix // 255), 0, 1)
 
-        weight = np.sum(self.bin_matrix) // 255
+        weight = np.sum(inv_bin_matrix)
         norm_weight = weight / (self.height * self.width)
 
-        x_center = np.sum([x * f for (x, y), f in np.ndenumerate(self.bin_matrix)]) // (weight * 255)
-        y_center = np.sum([y * f for (x, y), f in np.ndenumerate(self.bin_matrix)]) // (weight * 255)
+        x_center = np.sum([x * f for (y, x), f in np.ndenumerate(inv_bin_matrix)]) // weight
+        y_center = np.sum([y * f for (y, x), f in np.ndenumerate(inv_bin_matrix)]) // weight
 
         norm_x_center = (x_center - 1) / (m - 1)
         norm_y_center = (y_center - 1) / (n - 1)
 
-        x_moment = np.sum([f * (x - x_center) ** 2 for (x, y), f in np.ndenumerate(self.bin_matrix)]) // 255
-        y_moment = np.sum([f * (y - y_center) ** 2 for (x, y), f in np.ndenumerate(self.bin_matrix)]) // 255
+        x_moment = np.sum([f * (x - x_center) ** 2 for (y, x), f in np.ndenumerate(inv_bin_matrix)])
+        y_moment = np.sum([f * (y - y_center) ** 2 for (y, x), f in np.ndenumerate(inv_bin_matrix)])
 
-        norma_x, norma_y = self.get_norm()
-        norm_x_moment = x_moment / norma_x #(m ** 2 + n ** 2)
-        norm_y_moment = y_moment / norma_y #(m ** 2 + n ** 2)
+        norm_x_moment = x_moment / (m ** 2 + n ** 2)
+        norm_y_moment = y_moment / (m ** 2 + n ** 2)
+
         return {'weight': weight, 'norm_weight': norm_weight,
                 'center': (x_center, y_center),
                 'norm_center': (norm_x_center, norm_y_center),
@@ -72,31 +59,37 @@ class FontCharacteristics:
 
     def create_symbol_images(self) -> None:
         for sym in self.symbol_list:
-            im = Image.new('L', self.symbol_size, color='white')
-            d = ImageDraw.Draw(im)
+            delta = 20
             f = ImageFont.truetype(self.font, self.font_size)
-            mw, mh = self.symbol_size
-            w, h = d.textsize(sym, font=f)
-            d.text((((mw - w) // 2), (mh - h) // 2), sym, font=f)
-            dop_symb = ''
-            if sym.islower():
-                dop_symb='_'
-            im = ImageOps.invert(im)
-            char = np.array(im)
-            idx = np.argwhere(np.all(char[..., :] == 0, axis=0))
-            char = np.delete(char, idx, axis=1)
-            idx = np.argwhere(np.all(char[..., :] == 0, axis=1))
-            char = np.delete(char, idx, axis=0)
-            im = Image.fromarray(np.uint8(char), 'L')
-            #im.show()
-            im.save(dop_symb + sym + '.bmp')
+            w, h = f.getsize(sym)
+            w, h = map(lambda x: x + delta, (w, h))
+            im = Image.new('L', (w, h), color='white')
+            d = ImageDraw.Draw(im)
+            d.text((delta // 2, delta // 2), sym, font=f)
+
+            im_matr = np.array(im)
+            mask = im_matr == 255
+            rows = np.flatnonzero(np.sum(~mask, axis=1))
+            cols = np.flatnonzero(np.sum(~mask, axis=0))
+
+            crop = im_matr[rows.min(): rows.max() + 1, cols.min(): cols.max() + 1]
+            im = Image.fromarray(crop, 'L')
+
+            if sym.isupper() and not sym.islower():
+                im.save(sym + '_upper.bmp')
+            elif sym.islower() and not sym.isupper():
+                im.save(sym.upper() + '_lower.bmp')
+            else:
+                im.save(sym + '.bmp')
 
     def calc_characteristics(self):
         for sym in self.symbol_list:
-            dop_symb = ''
-            if sym.islower():
-                dop_symb = '_'
-            im = SymbolImage(dop_symb + sym + '.bmp')
+            if sym.isupper() and not sym.islower():
+                im = SymbolImage(sym + '_upper.bmp')
+            elif sym.islower() and not sym.isupper():
+                im = SymbolImage(sym.upper() + '_lower.bmp')
+            else:
+                im = SymbolImage(sym + '.bmp')
             self.symbol_characteristics[sym] = im.calc_characteristics()
 
         return self
@@ -126,4 +119,4 @@ class FontCharacteristics:
             raise NameNotPassed("Name of file must contain some symbols")
 
 
-# FontCharacteristics("АБВГДЕ").calc_characteristics().to_csv('result.csv')
+FontCharacteristics("ABCabc+=jJ").calc_characteristics().to_csv('result.csv')
