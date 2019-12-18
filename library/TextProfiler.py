@@ -95,15 +95,16 @@ class TextProfiler(LabImage):
             self.rgb_matrix = np.array(self.orig)
             self.path = image.path
 
-        new_img = self.orig.convert('L')
-        self.work_image = ImageOps.invert(new_img)
+        #new_img = self.orig.convert('L')
+        #self.work_image = ImageOps.invert(new_img)
+        self.work_image = self.orig
         self.letters_coords = []  # координаты букв на изображении
         self.result = self.orig  # после вызова метода get_text_segmentation записывается сегментарованное изображение
 
     # находит координаты символов на изображении
     def get_text_segmentation(self):
-        image = self.work_image
 
+        image = self.work_image
         y_profile = get_y_profile(image)
         rows = get_rows_in_text(y_profile)
         r = 0
@@ -161,14 +162,14 @@ class TextProfiler(LabImage):
                 k += 1
             np.delete(letters_in_row, letter_part, axis=0)
             '''
-            #draw_segmented_row(self.result, letters_in_row)
+            draw_segmented_row(self.result, letters_in_row)
             self.letters_coords.append(letters_in_row)
-        #self.result.show()
+        self.result.show()
         return self
 
 
 def test():
-    lab_img = LabImage("pictures_for_test/text.bmp")
+    lab_img = LabImage("pictures_for_test/B.bmp")
     text_profile = TextProfiler(lab_img)
     text_profile.get_text_segmentation()
 

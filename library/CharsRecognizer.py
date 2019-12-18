@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageOps
 from library.TextProfiler import *
 from library.SymbolImage import *
 import math
-
+from library.BinaryImage import *
 
 class CharsRecognizer(LabImage):
     """
@@ -12,11 +12,12 @@ class CharsRecognizer(LabImage):
     def __init__(self, path=None, image=None):
         super(CharsRecognizer, self).__init__(image=image, path=path)
 
+        bin_img = BinaryImage(path=path, image=image).cristian_binarisation()
+        bin_invert_img = ImageOps.invert(bin_img.result)
+        lab_bin_invert_img = LabImage(pilImage=bin_invert_img)
+        self.bin_matrix = np.array(bin_invert_img)
         if getattr(self, 'letters_coords', None) is None:
-            self.letters_coords = TextProfiler(image=image).get_text_segmentation()
-        if getattr(self, 'bin_matrix', None) is None:
-            img = image.get_invert_orig()
-            self.bin_matrix = BinaryImage(path=path, pilImage=img).cristian_binarisation().bin_matrix
+            self.letters_coords = TextProfiler(image=lab_bin_invert_img).get_text_segmentation().letters_coords
         self.tryToRecognizeWithFont(fontSize=24)
 
 
@@ -33,7 +34,7 @@ class CharsRecognizer(LabImage):
                 char = np.delete(char, idx, axis=0)
 
                 img = Image.fromarray(np.uint8(char), 'L')
-                img.show()
+                #img.show()
                 sym_characteristics = SymbolImage(image=LabImage(pilImage=img)).calc_characteristics()
                 dist_array = {}
                 for c in self.symbols_features.symbol_list:
@@ -51,8 +52,8 @@ class CharsRecognizer(LabImage):
 
 def test():
     lab_img = LabImage("pictures_for_test/text2.bmp")
-    lab_img = TextProfiler(lab_img)
-    lab_img.get_text_segmentation()
+    #lab_img = TextProfiler(lab_img)
+    #lab_img.get_text_segmentation()
     img = CharsRecognizer(image=lab_img)
     #img.show()
     #print(img.symbol_characteristics)

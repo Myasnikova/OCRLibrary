@@ -96,8 +96,9 @@ class LabImage:
         else:
             self.result.show()
 
-    def get_invert_orig(self):
-        return ImageOps.invert(self.orig)
+    def invert_result(self):
+        self.result = ImageOps.invert(self.result)
+        return
 
 
     def calc_grayscale_matrix(self):
