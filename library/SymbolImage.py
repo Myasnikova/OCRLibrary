@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image, ImageFont, ImageDraw, ImageOps
 import numpy as np
 
 import csv
@@ -20,12 +20,12 @@ class SymbolImage(LabImage):
 
         if getattr(self, 'bin_matrix', None) is None:
             # TODO надо бы выбрать способ бинаризации по умолчанию
-            #self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
-            self.bin_matrix = self.grayscale_matrix
+            self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
+            #self.bin_matrix = self.grayscale_matrix
 
 
     def get_norm(self):
-        nm = np.ones((self.height,self.width), dtype=float)
+        nm = np.ones((self.height, self.width), dtype=float)
         weight = np.sum(nm)
         x_center = np.sum([x * f for (x, y), f in np.ndenumerate(nm)]) // weight
         y_center = np.sum([y * f for (x, y), f in np.ndenumerate(nm)]) // weight
@@ -81,6 +81,14 @@ class FontCharacteristics:
             dop_symb = ''
             if sym.islower():
                 dop_symb='_'
+            im = ImageOps.invert(im)
+            char = np.array(im)
+            idx = np.argwhere(np.all(char[..., :] == 0, axis=0))
+            char = np.delete(char, idx, axis=1)
+            idx = np.argwhere(np.all(char[..., :] == 0, axis=1))
+            char = np.delete(char, idx, axis=0)
+            im = Image.fromarray(np.uint8(char), 'L')
+            #im.show()
             im.save(dop_symb + sym + '.bmp')
 
     def calc_characteristics(self):

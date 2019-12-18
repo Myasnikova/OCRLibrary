@@ -15,8 +15,9 @@ class CharsRecognizer(LabImage):
         if getattr(self, 'letters_coords', None) is None:
             self.letters_coords = TextProfiler(image=image).get_text_segmentation()
         if getattr(self, 'bin_matrix', None) is None:
-            self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
-        self.tryToRecognizeWithFont(fontSize=32)
+            img = image.get_invert_orig()
+            self.bin_matrix = BinaryImage(path=path, pilImage=img).cristian_binarisation().bin_matrix
+        self.tryToRecognizeWithFont(fontSize=24)
 
 
     def tryToRecognizeWithFont(self, font=None, fontSize=None):
@@ -26,7 +27,13 @@ class CharsRecognizer(LabImage):
         for row in self.letters_coords:
             for i in row:
                 char = self.bin_matrix[i[0][1]:i[2][1],i[0][0]:i[1][0]]
+                idx = np.argwhere(np.all(char[..., :] == 0, axis=0))
+                char = np.delete(char, idx, axis=1)
+                idx = np.argwhere(np.all(char[..., :] == 0, axis=1))
+                char = np.delete(char, idx, axis=0)
+
                 img = Image.fromarray(np.uint8(char), 'L')
+                img.show()
                 sym_characteristics = SymbolImage(image=LabImage(pilImage=img)).calc_characteristics()
                 dist_array = {}
                 for c in self.symbols_features.symbol_list:
@@ -43,11 +50,11 @@ class CharsRecognizer(LabImage):
         return self
 
 def test():
-    lab_img = LabImage("pictures_for_test/text.bmp")
+    lab_img = LabImage("pictures_for_test/text2.bmp")
     lab_img = TextProfiler(lab_img)
     lab_img.get_text_segmentation()
     img = CharsRecognizer(image=lab_img)
-    img.show()
-    print(img.symbol_characteristics)
+    #img.show()
+    #print(img.symbol_characteristics)
 test()
 

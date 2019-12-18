@@ -6,8 +6,8 @@ from library.exceptions import WrongWindowSize
 
 
 class BinaryImage(LabImage):
-    def __init__(self, path=None, image=None):
-        super(BinaryImage, self).__init__(path=path, image=image)
+    def __init__(self, path=None, image=None, pilImage=None):
+        super(BinaryImage, self).__init__(path=path, image=image, pilImage=pilImage)
 
     def eikvil_binarization(self, rsize=3, Rsize=15, eps=15):
         """

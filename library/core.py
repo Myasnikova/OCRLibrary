@@ -1,7 +1,7 @@
 import os
 import sys
 
-from PIL import Image
+from PIL import Image,ImageOps
 import numpy as np
 
 import time
@@ -96,9 +96,9 @@ class LabImage:
         else:
             self.result.show()
 
-    def to_grayscale(self, image):
-        new_img = image.convert('L')
-        return new_img
+    def get_invert_orig(self):
+        return ImageOps.invert(self.orig)
+
 
     def calc_grayscale_matrix(self):
         """

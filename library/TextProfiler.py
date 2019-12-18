@@ -3,7 +3,6 @@ from PIL import Image, ImageDraw, ImageOps
 import numpy as np
 import math
 
-
 # возвращает вертикальный профиль изображения (проекция на ось y)
 def get_y_profile(img):
     h = img.size[1]
@@ -47,8 +46,8 @@ def get_zones(prof, r):
             zone_start = i
         if count == r and flag:
             flag = False
-            zone_finish = i - 1
-            zone_coords.append((zone_start - 1, zone_finish + 1))
+            zone_finish = i
+            zone_coords.append((zone_start - 1, zone_finish))
             zone_start = -1
             zone_finish = -1
     return zone_coords
@@ -107,13 +106,64 @@ class TextProfiler(LabImage):
 
         y_profile = get_y_profile(image)
         rows = get_rows_in_text(y_profile)
+        r = 0
+
         for i in rows:
+            r_size = i[1] - i[0]
             row_img = image.crop((0, i[0], image.size[0], i[1]))
             x_profile = get_x_profile(row_img)
             letters_in_row = get_letters_in_row(x_profile, i[0], i[1])
-            draw_segmented_row(self.result, letters_in_row)
+            '''
+            k = 0
+            l_size_prev = 0
+            letter_part=[]
+            for let in letters_in_row:
+                l_size = let[1][0]-let[0][0]
+                dx = let[0][0]
+                dy = let[0][1]
+                let_img = image.crop((let[0][0], i[0], let[1][0], i[1]))
+                pix = np.array(let_img)
+
+                idx_col = np.argwhere(np.all(pix[..., :] == 0, axis=0))
+                f_x = 0
+                f_y = 0
+
+                for j in range(1, idx_col.size):
+                    d = idx_col[j][0]-idx_col[j-1][0]
+                    if d > 1:
+                        st_x = idx_col[j-1][0]
+                        break
+
+                for j in range(idx_col.size-1, 0, -1):
+                    d = idx_col[j][0]-idx_col[j-1][0]
+                    if d > 1:
+                        f_x = idx_col[j][0]
+                        break
+
+                idx_row = np.argwhere(np.all(pix[..., :] == 0, axis=1))
+
+                for j in range(1, idx_row.size):
+                    d = idx_row[j][0]-idx_row[j-1][0]
+                    if d > 1:
+                        st_y = idx_row[j-1][0]
+                        break
+                for j in range(idx_row.size-1, 0, -1):
+                    d = idx_row[j][0] - idx_row[j - 1][0]
+                    if d > 1:
+                        f_y = idx_row[j][0]
+                        break
+                letters_in_row[k] = [(st_x+dx, st_y+dy), (f_x+dx,st_y+dy), (st_x+dx, f_y+dy), (f_x+dx,f_y+dy)]
+                if l_size_prev/2 > l_size:
+                    letter_part.append([k])
+                    letters_in_row[k - 1][1] = letters_in_row[k][1]
+                    letters_in_row[k - 1][3] = letters_in_row[k][3]
+                l_size_prev = l_size
+                k += 1
+            np.delete(letters_in_row, letter_part, axis=0)
+            '''
+            #draw_segmented_row(self.result, letters_in_row)
             self.letters_coords.append(letters_in_row)
-        # self.result.show()
+        #self.result.show()
         return self
 
 
