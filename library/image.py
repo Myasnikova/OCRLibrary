@@ -1,23 +1,28 @@
-from core import LabImage
-from BinaryImage import BinaryImage
-from ContouredImage import ContouredImage
-from TextProfiler import TextProfiler
+from library.core import LabImage
+from library.BinaryImage import BinaryImage
+from library.ContouredImage import ContouredImage
+from library.TextProfiler import TextProfiler
+from library.FilteredImage import FilteredImage
 import numpy as np
 import PIL as pl
 
 
-class Image:
+class OCRImage:
     image = None
 
     def __init__(self, path):
         self.image = pl.Image.open(path)
         self.lab_image = LabImage(path)
-        self.contoured_image_object = ContouredImage(self.lab_image)
-        self.binary_image_object = BinaryImage(self.lab_image)
-        self.text_profiler_object = TextProfiler(self.lab_image)
+        self.contoured_image_object = ContouredImage(image=self.lab_image)
+        self.binary_image_object = BinaryImage(image=self.lab_image)
+        #self.filtered_image_object = FilteredImage(image=self.lab_image)
+        self.text_profiler_object = TextProfiler(image=self.lab_image)
+
+    def show_result(self):
+        self.lab_image.show()
 
     def save(self, path):
-        self.image.save()
+        self.lab_image.save(path)
 
     def get_grayscale_image(self):
         return self.lab_image.gray_image
@@ -27,7 +32,7 @@ class Image:
             ValueError('Undefined method: {}'.format(method))
             return None
         if method == 1:  # метод эйквила
-            return self.binary_image_object.kir_binarization(rsize=_rsize, Rsize=_Rsize, eps=_eps)
+            return self.binary_image_object.eikvil_binarization(rsize=_rsize, Rsize=_Rsize, eps=_eps)
         if method == 2:  # метод кристиана
             return self.binary_image_object.cristian_binarisation(w_size=_w_size, k=_k)
 
@@ -43,5 +48,16 @@ class Image:
     def get_text_profiled_image(self):
         return self.text_profiler_object.get_text_segmentation()
 
-    def get_filtred_image(self):
+    def get_filtered_image(self):
         return
+
+
+def main():
+    img = OCRImage("pictures_for_test/text.bmp")
+    #img.filtered_image_object.median_filter()
+    img.binary_image_object.cristian_binarisation()
+    img.show_result()
+
+
+main()
+

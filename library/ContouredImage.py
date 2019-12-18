@@ -1,4 +1,4 @@
-from core import LabImage
+from library.core import LabImage
 from PIL import Image, ImageDraw
 import numpy as np
 import math
@@ -7,15 +7,8 @@ import math
 # Класс контурированных изображений
 
 class ContouredImage(LabImage):
-    def __init__(self,  image=None):
-        super().__init__()
-        if image is not None:
-            self.orig = image.orig
-            self.gray_image = image.gray_image
-            self.size = image.orig.size
-            self.height, self.width = self.size
-            self.rgb_matrix = np.array(self.orig)
-            self.path = image.path
+    def __init__(self, path=None, image=None):
+        super(ContouredImage, self).__init__(path=path, image=image)
 
     # Оператор Собеля
     # Аргументы:
@@ -85,7 +78,7 @@ class ContouredImage(LabImage):
 # Тест
 def test():
     lab_img = LabImage("pictures_for_test/cat.bmp")
-    img = ContouredImage(lab_img)
+    img = ContouredImage(image=lab_img)
     img.show()
     #img.prewitt_operator().show()
     img.sobel_operator(25).show()

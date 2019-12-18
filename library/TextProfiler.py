@@ -1,4 +1,4 @@
-from core import LabImage
+from library.core import LabImage
 from PIL import Image, ImageDraw, ImageOps
 import numpy as np
 import math

@@ -6,7 +6,7 @@ import numpy as np
 
 import time
 
-from exceptions import ResultNotExist, NameNotPassed
+from library.exceptions import ResultNotExist, NameNotPassed
 
 
 def timeit(method):
@@ -61,6 +61,7 @@ class LabImage:
         elif image is not None:
             for k, v in image.__dict__.items():
                 setattr(self, k, v)
+
         elif pilImage is not None:
             self.orig = pilImage
             self.size = self.orig.size

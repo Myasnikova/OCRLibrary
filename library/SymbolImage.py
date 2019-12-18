@@ -6,9 +6,9 @@ import numpy as np
 import csv
 from itertools import chain
 
-from core import LabImage
-from BinaryImage import BinaryImage
-from exceptions import ResultNotExist, NameNotPassed
+from library.core import LabImage
+from library.BinaryImage import BinaryImage
+from library.exceptions import ResultNotExist, NameNotPassed
 
 
 class SymbolImage(LabImage):
@@ -20,8 +20,19 @@ class SymbolImage(LabImage):
 
         if getattr(self, 'bin_matrix', None) is None:
             # TODO надо бы выбрать способ бинаризации по умолчанию
-            self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
-            # self.bin_matrix = self.grayscale_matrix
+            #self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
+            self.bin_matrix = self.grayscale_matrix
+
+
+    def get_norm(self):
+        nm = np.ones((self.height,self.width), dtype=float)
+        weight = np.sum(nm)
+        x_center = np.sum([x * f for (x, y), f in np.ndenumerate(nm)]) // weight
+        y_center = np.sum([y * f for (x, y), f in np.ndenumerate(nm)]) // weight
+        x_moment = np.sum([f * (x - x_center) ** 2 for (x, y), f in np.ndenumerate(nm)])
+        y_moment = np.sum([f * (y - y_center) ** 2 for (x, y), f in np.ndenumerate(nm)])
+        return (x_moment, y_moment)
+
 
     def calc_characteristics(self):
         m, n = self.bin_matrix.shape
@@ -38,9 +49,9 @@ class SymbolImage(LabImage):
         x_moment = np.sum([f * (x - x_center) ** 2 for (x, y), f in np.ndenumerate(self.bin_matrix)]) // 255
         y_moment = np.sum([f * (y - y_center) ** 2 for (x, y), f in np.ndenumerate(self.bin_matrix)]) // 255
 
-        norm_x_moment = x_moment / (m ** 2 + n ** 2)
-        norm_y_moment = y_moment / (m ** 2 + n ** 2)
-
+        norma_x, norma_y = self.get_norm()
+        norm_x_moment = x_moment / norma_x #(m ** 2 + n ** 2)
+        norm_y_moment = y_moment / norma_y #(m ** 2 + n ** 2)
         return {'weight': weight, 'norm_weight': norm_weight,
                 'center': (x_center, y_center),
                 'norm_center': (norm_x_center, norm_y_center),
@@ -67,11 +78,17 @@ class FontCharacteristics:
             mw, mh = self.symbol_size
             w, h = d.textsize(sym, font=f)
             d.text((((mw - w) // 2), (mh - h) // 2), sym, font=f)
-            im.save(sym + '.bmp')
+            dop_symb = ''
+            if sym.islower():
+                dop_symb='_'
+            im.save(dop_symb + sym + '.bmp')
 
     def calc_characteristics(self):
         for sym in self.symbol_list:
-            im = SymbolImage(sym + '.bmp')
+            dop_symb = ''
+            if sym.islower():
+                dop_symb = '_'
+            im = SymbolImage(dop_symb + sym + '.bmp')
             self.symbol_characteristics[sym] = im.calc_characteristics()
 
         return self

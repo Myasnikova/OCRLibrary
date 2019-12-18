@@ -163,9 +163,10 @@ class FilteredImage(LabImage):
 
         return self
 
+def test():
+    im = LabImage("../sample_2.bmp")
+    im = FilteredImage(image=im)
+    im.median_filter(wsize=7)
+    # im.weighted_rank_filter(3, [[1, 2, 1], [2, 4, 2], [1, 2, 1]], 10)
+    im.show()
 
-im = LabImage("../sample_2.bmp")
-im = FilteredImage(image=im)
-im.median_filter(wsize=7)
-# im.weighted_rank_filter(3, [[1, 2, 1], [2, 4, 2], [1, 2, 1]], 10)
-im.show()
