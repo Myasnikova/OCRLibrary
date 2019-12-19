@@ -6,7 +6,7 @@ import numpy as np
 
 import time
 
-from library.exceptions import ResultNotExist, NameNotPassed
+from exceptions import ResultNotExist, NameNotPassed
 
 
 def timeit(method):

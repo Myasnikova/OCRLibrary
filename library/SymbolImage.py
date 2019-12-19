@@ -9,6 +9,7 @@ from itertools import chain
 from core import LabImage
 from BinaryImage import BinaryImage
 from exceptions import ResultNotExist, NameNotPassed
+from TextProfiler import TextProfiler
 
 
 class SymbolImage(LabImage):
@@ -74,6 +75,7 @@ class FontCharacteristics:
 
         self.create_symbol_images()
 
+
     def create_symbol_images(self) -> None:
         for sym in self.symbol_list:
             im = Image.new('L', self.symbol_size, color='white')
@@ -81,11 +83,15 @@ class FontCharacteristics:
             f = ImageFont.truetype(self.font, self.font_size)
             mw, mh = self.symbol_size
             w, h = d.textsize(sym, font=f)
-            d.text((((mw - w) // 2), (mh - h) // 2), sym, font=f)
+            d.text((((mw - w) // 2), (mh - h) // 2), sym, font=f, fill=(0))
+
+            im = BinaryImage(pilImage=im).cristian_binarisation().result
+            im = ImageOps.invert(im)
+
+            #im.show()
             dop_symb = ''
             if sym.islower():
                 dop_symb='_'
-            im = ImageOps.invert(im)
             char = np.array(im)
             idx = np.argwhere(np.all(char[..., :] == 0, axis=0))
             char = np.delete(char, idx, axis=1)
@@ -94,6 +100,9 @@ class FontCharacteristics:
             im = Image.fromarray(np.uint8(char), 'L')
             #im.show()
             im.save(dop_symb + sym + '.bmp')
+
+
+
 
     def calc_characteristics(self):
         for sym in self.symbol_list:
