@@ -97,8 +97,8 @@ class LabImage:
             self.result.show()
 
     def get_invert_orig(self):
-        return ImageOps.invert(self.orig)
-
+        # return ImageOps.invert(self.orig)
+        return self.orig
 
     def calc_grayscale_matrix(self):
         """
@@ -107,7 +107,7 @@ class LabImage:
         if(len(self.rgb_matrix.shape)>2):
             gray_matrix = np.sum(self.rgb_matrix, axis=2) // 3
         else:
-             gray_matrix = self.rgb_matrix 
+            gray_matrix = self.rgb_matrix
         self.grayscale_matrix = gray_matrix
 
     def save(self, name: str):

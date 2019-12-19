@@ -12,12 +12,15 @@ class SymbolImage(LabImage):
     """
     Класс осуществляющий выделение символьных признаков для заданного изображения
     """
-    def __init__(self, path=None, image=None):
-        super(SymbolImage, self).__init__(path=path, image=image)
+    def __init__(self, path=None, image=None, pilImage=None, f=False):
+        super(SymbolImage, self).__init__(path=path, image=image, pilImage=pilImage)
 
         if getattr(self, 'bin_matrix', None) is None:
             # TODO надо бы выбрать способ бинаризации по умолчанию
-            self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
+            if f:
+                self.bin_matrix = BinaryImage(path=path, image=image, pilImage=pilImage).eikvil_binarization().bin_matrix
+            else:
+                self.bin_matrix = BinaryImage(path=path, image=image, pilImage=pilImage).cristian_binarisation().bin_matrix
             #self.bin_matrix = self.grayscale_matrix
 
     def calc_characteristics(self):
@@ -33,17 +36,21 @@ class SymbolImage(LabImage):
         norm_x_center = (x_center - 1) / (m - 1)
         norm_y_center = (y_center - 1) / (n - 1)
 
-        x_moment = np.sum([f * (x - x_center) ** 2 for (y, x), f in np.ndenumerate(inv_bin_matrix)])
-        y_moment = np.sum([f * (y - y_center) ** 2 for (y, x), f in np.ndenumerate(inv_bin_matrix)])
+        x_moment = np.sum([f * (y - y_center) ** 2 for (y, x), f in np.ndenumerate(inv_bin_matrix)])
+        y_moment = np.sum([f * (x - y_center) ** 2 for (y, x), f in np.ndenumerate(inv_bin_matrix)])
+        xy_45_moment = np.sum([f * (y - y_center - x + x_center) ** 2 for (y, x), f in np.ndenumerate(inv_bin_matrix)]) // 2
+        xy_135_moment = np.sum([f * (y - y_center + x - y_center) ** 2 for (y, x), f in np.ndenumerate(inv_bin_matrix)]) // 2
 
-        norm_x_moment = x_moment / (m ** 2 + n ** 2)
-        norm_y_moment = y_moment / (m ** 2 + n ** 2)
+        norm_x_moment = x_moment / (weight ** 2)
+        norm_y_moment = y_moment / (weight ** 2)
+        norm_xy_45_moment = xy_45_moment / (weight ** 2)
+        norm_xy_135_moment = xy_135_moment / (weight ** 2)
 
         return {'weight': weight, 'norm_weight': norm_weight,
                 'center': (x_center, y_center),
                 'norm_center': (norm_x_center, norm_y_center),
-                'moment': (x_moment, y_moment),
-                'norm_moment': (norm_x_moment, norm_y_moment)}
+                'moment': (x_moment, y_moment, xy_45_moment, xy_135_moment),
+                'norm_moment': (norm_x_moment, norm_y_moment, norm_xy_45_moment, norm_xy_135_moment)}
 
 
 class FontCharacteristics:
@@ -119,4 +126,4 @@ class FontCharacteristics:
             raise NameNotPassed("Name of file must contain some symbols")
 
 
-FontCharacteristics("ABCabc+=jJ").calc_characteristics().to_csv('result.csv')
+# FontCharacteristics("ABCabc+=jJ").calc_characteristics().to_csv('result.csv')

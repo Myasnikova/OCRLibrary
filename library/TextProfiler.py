@@ -85,7 +85,7 @@ def draw_segmented_row(img, zones):
 # класс для сегментации текстовых изображений
 class TextProfiler(LabImage):
     def __init__(self, image=None):
-        super().__init__()
+        super(TextProfiler, self).__init__(image=image)
 
         if image is not None:
             self.orig = image.orig
