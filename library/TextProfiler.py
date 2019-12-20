@@ -168,19 +168,19 @@ class TextProfiler(LabImage):
             letter_part = []
 
             #для буквы ы
-            '''
+
             for let in letters_in_row:
                 l_size = let[1][0] - let[0][0]
-                if (l_size_prev / 3) > l_size:
+                if (l_size_prev / 2.5) > l_size:
                     letter_part.append(k)
                     letters_in_row[k - 1][1] = letters_in_row[k][1]
                     letters_in_row[k - 1][3] = letters_in_row[k][3]
                 l_size_prev = l_size
                 k += 1
             letters_in_row = np.delete(letters_in_row, letter_part, axis=0)
-            draw_segmented_row(self.result, letters_in_row)
-            self.letters_coords.append(letters_in_row)
-            '''
+            #draw_segmented_row(self.result, letters_in_row)
+            #self.letters_coords.append(letters_in_row)
+
             # для близко стоящих букв
             '''
             for k in range(0, len(letters_in_row)-1):
@@ -199,9 +199,10 @@ class TextProfiler(LabImage):
                     letters_in_row[k][1][0] = m
                     letters_in_row[k][2][0] = m
                     letters_in_row.insert(k+1, new_let)
+            '''
             draw_segmented_row(self.result, letters_in_row)
             self.letters_coords.append(letters_in_row)
-            '''
+
 
         return self
 

@@ -75,8 +75,7 @@ class FontCharacteristics:
 
         self.create_symbol_images()
 
-
-    def create_symbol_images(self) -> None:
+    def create_symbol_images_1(self) -> None:
         for sym in self.symbol_list:
             im = Image.new('L', self.symbol_size, color='white')
             d = ImageDraw.Draw(im)
@@ -84,14 +83,13 @@ class FontCharacteristics:
             mw, mh = self.symbol_size
             w, h = d.textsize(sym, font=f)
             d.text((((mw - w) // 2), (mh - h) // 2), sym, font=f, fill=(0))
-
             im = BinaryImage(pilImage=im).cristian_binarisation().result
-            im = ImageOps.invert(im)
-
             #im.show()
+            #im = ImageOps.invert(im.convert('L'))
+            im = ImageOps.invert(im)
             dop_symb = ''
             if sym.islower():
-                dop_symb='_'
+                dop_symb = '_'
             char = np.array(im)
             idx = np.argwhere(np.all(char[..., :] == 0, axis=0))
             char = np.delete(char, idx, axis=1)
@@ -99,7 +97,46 @@ class FontCharacteristics:
             char = np.delete(char, idx, axis=0)
             im = Image.fromarray(np.uint8(char), 'L')
             #im.show()
-            im.save(dop_symb + sym + '.bmp')
+            im.save('alphabeth/'+dop_symb + sym + '.bmp')
+
+
+    def create_symbol_images(self) -> None:
+
+        text =  [' '.join(word) for word in self.symbol_list.split()][0]
+        im = Image.new('L', (self.symbol_size[0]*len(text), self.symbol_size[1]*3), color='white')
+        d = ImageDraw.Draw(im)
+        f = ImageFont.truetype(self.font, self.font_size)
+        mw, mh = self.symbol_size
+        #w, h = (self.symbol_size[0]*len(self.symbol_list),self.symbol_size[1]*3)
+        d.text((5, 5), text, font=f, fill=(0))
+        im = BinaryImage(pilImage=im).cristian_binarisation().result
+            #im.show()
+            #im = ImageOps.invert(im.convert('L'))
+
+        bin_invert_img = ImageOps.invert(im)
+        lab_bin_invert_img = LabImage(pilImage=bin_invert_img)
+        lc = TextProfiler(image=lab_bin_invert_img).get_text_segmentation().letters_coords
+        k=0
+        for i in lc[0]:
+            w = i[1][0] - i[0][0]
+            h = i[3][1] - i[0][1]
+            arr_im = np.array(bin_invert_img, dtype=int)
+            cropy = arr_im[i[0][1]:i[2][1],i[0][0]:i[1][0]]
+            #cropy.show()
+
+            dop_symb = ''
+            sym = self.symbol_list[k]
+            k+=1
+            if sym.islower():
+                dop_symb = '_'
+            char = np.array(cropy)
+            idx = np.argwhere(np.all(char[..., :] == 0, axis=0))
+            char = np.delete(char, idx, axis=1)
+            idx = np.argwhere(np.all(char[..., :] == 0, axis=1))
+            char = np.delete(char, idx, axis=0)
+            im = Image.fromarray(np.uint8(char), 'L')
+            #im.show()
+            im.save('alphabeth/'+dop_symb + sym + '.bmp')
 
 
 
@@ -109,7 +146,7 @@ class FontCharacteristics:
             dop_symb = ''
             if sym.islower():
                 dop_symb = '_'
-            im = SymbolImage(dop_symb + sym + '.bmp')
+            im = SymbolImage('alphabeth/'+ dop_symb + sym + '.bmp')
             self.symbol_characteristics[sym] = im.calc_characteristics()
 
         return self

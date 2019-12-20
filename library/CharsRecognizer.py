@@ -18,7 +18,7 @@ class CharsRecognizer(LabImage):
         self.bin_matrix = np.array(bin_invert_img)
         if getattr(self, 'letters_coords', None) is None:
             self.letters_coords = TextProfiler(image=lab_bin_invert_img).get_text_segmentation().letters_coords
-        self.tryToRecognizeWithFont(fontSize=36)
+        self.tryToRecognizeWithFont(fontSize=48)
 
 
     def tryToRecognizeWithFont(self, font=None, fontSize=None):
@@ -36,7 +36,11 @@ class CharsRecognizer(LabImage):
 
                 img = Image.fromarray(np.uint8(char), 'L')
                 #img.show()
-                img.save("pictures_for_test/liza_letters/"+symbols[g]+".bmp")
+                dop = ''
+                if symbols[g].islower():
+                    dop = "_"
+
+                img.save("pictures_for_test/liza_letters/"+dop+str(g)+".bmp")
                 g=g+1
                 sym_characteristics = SymbolImage(image=LabImage(pilImage=img)).calc_characteristics()
                 dist_array = {}
@@ -45,7 +49,7 @@ class CharsRecognizer(LabImage):
                      c_features = np.array(([c_features['norm_weight'], c_features['norm_center'][0], c_features['norm_center'][1], c_features['norm_moment'][0], c_features['norm_moment'][1]]))
                      cur_features = np.array(([sym_characteristics['norm_weight'], sym_characteristics['norm_center'][0], sym_characteristics['norm_center'][1], sym_characteristics['norm_moment'][0], sym_characteristics['norm_moment'][1]]))
                      dist = np.linalg.norm(c_features-cur_features)
-                     dist_array[c] = 1 - dist
+                     dist_array[c] = 1-dist
                 sorted_dist = sorted(dist_array.items(), key=lambda kv: kv[1], reverse=True)
                 rec_chars.append(sorted_dist[0])
                 dist_array.clear()
