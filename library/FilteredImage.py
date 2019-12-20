@@ -1,9 +1,9 @@
 from tqdm import tqdm
 
-from library.core import *
-from library.exceptions import WrongRank, WrongWindowSize
+from core import *
+from exceptions import WrongRank, WrongWindowSize
 
-from library.BinaryImage import BinaryImage
+from BinaryImage import BinaryImage
 
 
 class FilteredImage(LabImage):
@@ -164,7 +164,7 @@ class FilteredImage(LabImage):
         return self
 
 def test():
-    im = LabImage("../sample_2.bmp")
+    im = LabImage("pictures_for_test/cat.bmp")
     im = FilteredImage(image=im)
     im.median_filter(wsize=7)
     # im.weighted_rank_filter(3, [[1, 2, 1], [2, 4, 2], [1, 2, 1]], 10)

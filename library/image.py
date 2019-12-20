@@ -1,8 +1,8 @@
-from library.core import LabImage
-from library.BinaryImage import BinaryImage
-from library.ContouredImage import ContouredImage
-from library.TextProfiler import TextProfiler
-from library.FilteredImage import FilteredImage
+from core import LabImage
+from BinaryImage import BinaryImage
+from ContouredImage import ContouredImage
+from TextProfiler import TextProfiler
+from FilteredImage import FilteredImage
 import numpy as np
 import PIL as pl
 
@@ -15,7 +15,7 @@ class OCRImage:
         self.lab_image = LabImage(path)
         self.contoured_image_object = ContouredImage(image=self.lab_image)
         self.binary_image_object = BinaryImage(image=self.lab_image)
-        #self.filtered_image_object = FilteredImage(image=self.lab_image)
+        self.filtered_image_object = FilteredImage(image=self.lab_image)
         self.text_profiler_object = TextProfiler(image=self.lab_image)
 
     def show_result(self):
@@ -49,7 +49,7 @@ class OCRImage:
         return self.text_profiler_object.get_text_segmentation()
 
     def get_filtered_image(self):
-        return
+        return self.filtered_image_object.median_filter()
 
 
 def main():

@@ -1,7 +1,7 @@
 ﻿from library.core import LabImage
 from PIL import Image, ImageDraw, ImageOps
-from library.TextProfiler import *
-from library.SymbolImage import *
+from TextProfiler import *
+from SymbolImage import *
 import math
 
 

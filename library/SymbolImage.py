@@ -6,9 +6,9 @@ import numpy as np
 import csv
 from itertools import chain
 
-from library.core import LabImage
-from library.BinaryImage import BinaryImage
-from library.exceptions import ResultNotExist, NameNotPassed
+from core import LabImage
+from BinaryImage import BinaryImage
+from exceptions import ResultNotExist, NameNotPassed
 
 
 class SymbolImage(LabImage):

@@ -1,8 +1,8 @@
 from tqdm import tqdm
 from math import ceil
 
-from library.core import *
-from library.exceptions import WrongWindowSize
+from core import *
+from exceptions import WrongWindowSize
 
 
 class BinaryImage(LabImage):
