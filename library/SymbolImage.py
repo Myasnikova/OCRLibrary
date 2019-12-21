@@ -22,20 +22,6 @@ class SymbolImage(LabImage):
         if getattr(self, 'bin_matrix', None) is None:
             # TODO надо бы выбрать способ бинаризации по умолчанию
             self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
-            #self.bin_matrix = self.grayscale_matrix
-            #img = Image.fromarray(np.uint8(self.bin_matrix), 'L')
-            #img.show()
-
-
-    def get_norm(self):
-        nm = np.ones((self.height, self.width), dtype=float)
-        weight = np.sum(nm)
-        x_center = np.sum([x * f for (x, y), f in np.ndenumerate(nm)]) // weight
-        y_center = np.sum([y * f for (x, y), f in np.ndenumerate(nm)]) // weight
-        x_moment = np.sum([f * (x - x_center) ** 2 for (x, y), f in np.ndenumerate(nm)])
-        y_moment = np.sum([f * (y - y_center) ** 2 for (x, y), f in np.ndenumerate(nm)])
-        return (x_moment, y_moment)
-
 
     def calc_characteristics(self):
         m, n = self.bin_matrix.shape
@@ -54,7 +40,6 @@ class SymbolImage(LabImage):
         maxx_moment = np.sum([(x - x_center) ** 2 for (x, y), f in np.ndenumerate(self.bin_matrix)]) // 255
         maxy_moment = np.sum([(y - y_center) ** 2 for (x, y), f in np.ndenumerate(self.bin_matrix)]) // 255
 
-        norma_x, norma_y = self.get_norm()
         norm_x_moment = x_moment / maxx_moment /(m ** 2 + n ** 2)
         norm_y_moment = y_moment / maxy_moment /(m ** 2 + n ** 2)
         return {'weight': weight, 'norm_weight': norm_weight,
@@ -75,7 +60,7 @@ class FontCharacteristics:
 
         self.create_symbol_images()
 
-    def create_symbol_images_1(self) -> None:
+    def create_symbol_images(self) -> None:
         for sym in self.symbol_list:
             im = Image.new('L', self.symbol_size, color='white')
             d = ImageDraw.Draw(im)
@@ -83,9 +68,6 @@ class FontCharacteristics:
             mw, mh = self.symbol_size
             w, h = d.textsize(sym, font=f)
             d.text((((mw - w) // 2), (mh - h) // 2), sym, font=f, fill=(0))
-            im = BinaryImage(pilImage=im).cristian_binarisation().result
-            #im.show()
-            #im = ImageOps.invert(im.convert('L'))
             im = ImageOps.invert(im)
             dop_symb = ''
             if sym.islower():
@@ -96,48 +78,10 @@ class FontCharacteristics:
             idx = np.argwhere(np.all(char[..., :] == 0, axis=1))
             char = np.delete(char, idx, axis=0)
             im = Image.fromarray(np.uint8(char), 'L')
-            #im.show()
-            im.save('alphabeth/'+dop_symb + sym + '.bmp')
-
-
-    def create_symbol_images(self) -> None:
-
-        text =  [' '.join(word) for word in self.symbol_list.split()][0]
-        im = Image.new('L', (self.symbol_size[0]*len(text), self.symbol_size[1]*3), color='white')
-        d = ImageDraw.Draw(im)
-        f = ImageFont.truetype(self.font, self.font_size)
-        mw, mh = self.symbol_size
-        #w, h = (self.symbol_size[0]*len(self.symbol_list),self.symbol_size[1]*3)
-        d.text((5, 5), text, font=f, fill=(0))
-        im = BinaryImage(pilImage=im).cristian_binarisation().result
-            #im.show()
-            #im = ImageOps.invert(im.convert('L'))
-
-        bin_invert_img = ImageOps.invert(im)
-        lab_bin_invert_img = LabImage(pilImage=bin_invert_img)
-        lc = TextProfiler(image=lab_bin_invert_img).get_text_segmentation().letters_coords
-        k=0
-        for i in lc[0]:
-            w = i[1][0] - i[0][0]
-            h = i[3][1] - i[0][1]
-            arr_im = np.array(bin_invert_img, dtype=int)
-            cropy = arr_im[i[0][1]:i[2][1],i[0][0]:i[1][0]]
-            #cropy.show()
-
-            dop_symb = ''
-            sym = self.symbol_list[k]
-            k+=1
-            if sym.islower():
-                dop_symb = '_'
-            char = np.array(cropy)
-            idx = np.argwhere(np.all(char[..., :] == 0, axis=0))
-            char = np.delete(char, idx, axis=1)
-            idx = np.argwhere(np.all(char[..., :] == 0, axis=1))
-            char = np.delete(char, idx, axis=0)
-            im = Image.fromarray(np.uint8(char), 'L')
-            #im.show()
-            im.save('alphabeth/'+dop_symb + sym + '.bmp')
-
+            new_img = Image.new('L', (mw, mh), color='black')
+            offset = ((mw - im.size[0]) // 2, (mh - im.size[1]) // 2)
+            new_img.paste(im, offset)
+            new_img.save('alphabeth/'+dop_symb + sym + '.bmp')
 
 
 
