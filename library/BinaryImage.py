@@ -6,6 +6,9 @@ from exceptions import WrongWindowSize
 
 
 class BinaryImage(LabImage):
+    """
+    Класс бинаризации изображений
+    """
     def __init__(self, path=None, image=None, pilImage=None):
         super(BinaryImage, self).__init__(path=path, image=image, pilImage=pilImage)
 

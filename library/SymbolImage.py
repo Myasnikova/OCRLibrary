@@ -17,6 +17,16 @@ class SymbolImage(LabImage):
     Класс осуществляющий выделение символьных признаков для заданного изображения
     """
     def __init__(self, path=None, image=None):
+        """
+        Инициализация объекта класса SymbolImage
+
+        :param path: путь до изображения
+        :type path: str or None
+
+        :param image: экземпляр класса LabImage
+        :type image: LabImage or None
+
+        """
         super(SymbolImage, self).__init__(path=path, image=image)
 
         if getattr(self, 'bin_matrix', None) is None:
@@ -24,6 +34,11 @@ class SymbolImage(LabImage):
             self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
 
     def calc_characteristics(self):
+        """
+        Функция вычисления характеристик букв алфавита
+        :return: dict -- характеристики букв
+
+        """
         m, n = self.bin_matrix.shape
 
         weight = np.sum(self.bin_matrix) // 255
@@ -50,7 +65,29 @@ class SymbolImage(LabImage):
 
 
 class FontCharacteristics:
+    """
+    Класс создающий набор признаков для букв заданного алфавита
+    """
     def __init__(self, symbols: list or tuple or str, font=None, font_size=None, symbol_size=None):
+        """
+        Инициализация объекта класса FontCharacteristics
+
+        :param symbols: алфавит
+        :type symbols: str or None
+
+        :param image: экземпляр класса LabImage
+        :type image: LabImage or None
+
+        :param font: путь до файла шрифта
+        :type font: str or None
+
+        :param font_size: размер шрифта
+        :type font_size: int
+
+        :param symbol_size: размер символа
+        :type symbol_size: tuple
+
+        """
         self.font = font or 'TNR.ttf'
         self.font_size = font_size or 52
         self.symbol_size = symbol_size or (50, 50)
@@ -61,6 +98,10 @@ class FontCharacteristics:
         self.create_symbol_images()
 
     def create_symbol_images(self) -> None:
+        """
+        Функция генерации изображений сиволов алфавита
+
+        """
         for sym in self.symbol_list:
             im = Image.new('L', self.symbol_size, color='white')
             d = ImageDraw.Draw(im)
@@ -86,6 +127,10 @@ class FontCharacteristics:
 
 
     def calc_characteristics(self):
+        """
+        Функция характеристик сиволов алфавита
+        :return: LabImage -- объект изображения
+        """
         for sym in self.symbol_list:
             dop_symb = ''
             if sym.islower():
@@ -96,6 +141,11 @@ class FontCharacteristics:
         return self
 
     def to_csv(self, name: str):
+        """
+        Создание файла с характеристиками символов алфавита .csv
+        :param name: путь до файла csv
+        :type name: str or None
+        """
         if name != '':
             if self.symbol_characteristics != {}:
                 with open(name, "w", newline='') as csv_file:

@@ -10,6 +10,21 @@ class CharsRecognizer(LabImage):
     Класс распознования символов на изображении с указанием параметров шрифта
     """
     def __init__(self, path=None, image=None, font='TNR.ttf', font_size=36):
+        """
+        Инициализация объекта класса CharsRecognizer
+
+        :param path: путь до изображения
+        :type path: str or None
+
+        :param image: экземпляр класса LabImage
+        :type image: LabImage or None
+
+        :param font: путь до файла шрифта
+        :type font: str or None
+
+        :param font_size: размер шрифта
+        :type font_size: int
+        """
         super(CharsRecognizer, self).__init__(image=image, path=path)
 
         invert_img = ImageOps.invert(image.orig)
@@ -22,6 +37,27 @@ class CharsRecognizer(LabImage):
 
 
     def tryToRecognizeWithFont(self, font=None, fontSize=None,symbol_size=(50,50)):
+        """
+        Функция разпознавания символов в тексте
+
+        :param path: путь до изображения
+        :type path: str or None
+
+        :param image: экземпляр класса LabImage
+        :type image: LabImage or None
+
+        :param font: путь до файла шрифта
+        :type font: str or None
+
+        :param fontSize: размер шрифта
+        :type fontSize: int
+
+        :param symbol_size: размер символа
+        :type symbol_size: tuple
+
+        :return: LabImage -- объект изображения
+
+        """
         symbols = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
         self.symbols_features= FontCharacteristics(symbols, font, fontSize,symbol_size=symbol_size).calc_characteristics()
         rec_chars = []
@@ -58,6 +94,24 @@ class CharsRecognizer(LabImage):
         return self
 
 def createText(text, font_size=36, font = 'TNR.ttf',image_size=(600,600),filename="text"):
+    """
+    Функция генерации текста
+
+    :param text: текст
+    :type text: str or None
+
+    :param fontSize: размер шрифта
+    :type fontSize: int
+
+    :param font: путь до файла шрифта
+    :type font: str or None
+
+    :param image_size: размер символа
+    :type image_size: tuple
+
+    :param filename: путь до файла сгенерированного текста
+    :type filename: str or None
+    """
     im = Image.new('L', image_size, color='white')
     d = ImageDraw.Draw(im)
     f = ImageFont.truetype(font, font_size)

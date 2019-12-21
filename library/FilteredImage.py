@@ -1,9 +1,9 @@
 from tqdm import tqdm
 
-from library.core import *
-from library.exceptions import WrongRank, WrongWindowSize
+from core import *
+from exceptions import WrongRank, WrongWindowSize
 
-from library.BinaryImage import BinaryImage
+from BinaryImage import BinaryImage
 
 
 class FilteredImage(LabImage):

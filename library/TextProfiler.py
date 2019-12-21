@@ -3,8 +3,16 @@ from PIL import Image, ImageDraw, ImageOps
 import numpy as np
 import math
 
-# возвращает вертикальный профиль изображения (проекция на ось y)
 def get_y_profile(img):
+    """
+    Получение вертикального профиля изображения
+
+    :param img: изображение
+    :type img: PIL.Image
+
+    :return: numpy.ndarray -- массив с профилем изображения
+
+    """
     h = img.size[1]
     arr = np.asarray(img, dtype=np.uint8)
     prof = []
@@ -12,9 +20,16 @@ def get_y_profile(img):
         prof.append(np.sum(arr[y]))
     return prof
 
-
-# возвращает горизонтальный профиль изображения (проекция на ось x)
 def get_x_profile(img):
+    """
+    Получение горизонтального профиля изображения
+
+    :param img: изображение
+    :type img: PIL.Image
+
+    :return: numpy.ndarray -- массив с профилем изображения
+
+    """
     w = img.size[0]
     arr = np.asarray(img, dtype=np.uint8).transpose()
     prof = []
@@ -23,8 +38,19 @@ def get_x_profile(img):
     return prof
 
 
-# считает нули в профиле (для если не разделяются бквы увеличить порог)
 def find_zero(arr, t):
+    """
+    Подсчет нулей в профиле изображения
+
+    :param arr: профиль
+    :type arr: numpy.ndarray
+
+    :param t: порог
+    :type t: int
+
+    :return: int -- количество нулей
+
+    """
     count = 0
     for i in arr:
         if i <= t:  # порог, для Times New Roman 12 подходит 250
@@ -32,8 +58,22 @@ def find_zero(arr, t):
     return count
 
 
-# определяет координаты зон текста: для вертикального профиля - строки, для горизонтального - буквы
 def get_zones(prof, r, t):
+    """
+    Опрделение координат зон текста: для вертикального профиля - строки, для горизонтального - буквы
+
+    :param prof: профиль
+    :type prof: numpy.ndarray
+
+    :param t: порог
+    :type t: int
+
+    :param r: размер окна
+    :type r: размер окна
+
+    :return: int -- количество нулей
+
+    """
     w = len(prof)
     zone_coords = []
     flag = False
@@ -53,23 +93,61 @@ def get_zones(prof, r, t):
     return zone_coords
 
 
-# находит координаты букв в строке, на вход профиль строки и координаты начала и конца строки
 def get_letters_in_row(prof, y_start, y_end,t):
+    """
+    Опрделение координат букв
+
+    :param prof: профиль
+    :type prof: numpy.ndarray
+
+    :param y_start: координаты начала строки
+    :type y_start: int
+
+    :param y_end: координаты конца строки
+    :type y_end: int
+
+    :param t: порог
+    :type t: int
+
+    :return: numpy.ndarray -- координаты букв
+
+    """
     r = 1
     zones = get_zones(prof, r,t)
 
     letters = [[(i[0], y_start), (i[1], y_start), (i[0], y_end), (i[1], y_end)] for i in zones]
     return letters
 
-
-# находит координаты строк в тексте, на входгоризонтальный профиль текста
 def get_rows_in_text(prof, t):
+    """
+    Опрделение координат строк
+
+    :param prof: горизональный профиль
+    :type prof: numpy.ndarray
+
+    :param t: порог
+    :type t: int
+
+    :return: numpy.ndarray -- координаты строк
+
+    """
     zones = get_zones(prof, 3, t)
     return zones
 
 
-# рисует сегментацию текста на изображении
 def draw_segmented_row(img, zones):
+    """
+    Отрисовка сегментации текста на буквы
+
+    :param img: изображение
+    :type img: PIL.Image
+
+    :param zones: координаты букв
+    :type zones: numpy.ndarray
+
+    :return: PIL.Image - размеченное изображение
+
+    """
     new_img = img.copy()
     draw = ImageDraw.Draw(new_img)
 
@@ -80,28 +158,40 @@ def draw_segmented_row(img, zones):
         draw.line((x[0][0], x[0][1], x[2][0], x[2][1]), fill=128, width=1)
         draw.line((x[1][0], x[1][1], x[3][0], x[3][1]), fill=128, width=1)
 
-    new_img.show()
+    #new_img.show()
+    return new_img
 
 
 # класс для сегментации текстовых изображений
 class TextProfiler(LabImage):
-    def __init__(self, image=None):
-        super().__init__()
+    """
+    Класс осуществляющий выделение букв в тексте
+    """
+    def __init__(self, path=None, image=None):
+        """
+        Инициализация объекта класса FilteredImage
 
-        if image is not None:
-            self.orig = image.orig
-            self.gray_image = image.gray_image
-            self.size = image.orig.size
-            self.height, self.width = self.size
-            self.rgb_matrix = np.array(self.orig)
-            self.path = image.path
+        :param path: путь до изображения
+        :type path: str or None
+        :param image: экземпляр класса LabImage
+        :type image: LabImage or None
+        """
+        super(TextProfiler, self).__init__(path=path, image=image)
 
         self.work_image = self.orig.convert('L')
         self.letters_coords = []  # координаты букв на изображении
         self.result = self.orig  # после вызова метода get_text_segmentation записывается сегментарованное изображение
 
-    # находит координаты символов на изображении
     def get_text_segmentation(self, t=0):
+        """
+        Получение координат символов на изображении
+
+        :param t: порог
+        :type t: int
+
+        :return: LabImage -- объект изображения
+
+        """
 
         image = self.work_image
         y_profile = get_y_profile(image)
@@ -129,7 +219,7 @@ class TextProfiler(LabImage):
                 l_size_prev = l_size
                 k += 1
             letters_in_row = np.delete(letters_in_row, letter_part, axis=0)
-            draw_segmented_row(self.result, letters_in_row)
+            self.result = draw_segmented_row(self.result, letters_in_row)
             self.letters_coords.append(letters_in_row)
 
 

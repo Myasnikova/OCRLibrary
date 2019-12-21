@@ -1,21 +1,35 @@
-from library.core import LabImage
+from core import LabImage
 from PIL import Image, ImageDraw
 import numpy as np
 import math
 
-
-# Класс контурированных изображений
-
 class ContouredImage(LabImage):
+    """
+    Класс осуществляющий выделение контуров переданного на вход изображения следующими методами:
+         - контурирование оператором Пюитт
+         - контурирование оператором Собеля
+    """
     def __init__(self, path=None, image=None):
+        """
+        Инициализация объекта класса ContouredImage
+
+        :param path: путь до изображения
+        :type path: str or None
+        :param image: экземпляр класса LabImage
+        :type image: LabImage or None
+        """
         super(ContouredImage, self).__init__(path=path, image=image)
 
-    # Оператор Собеля
-    # Аргументы:
-    # img: изображение, класс Image
-    # t: порог, integer
-
     def sobel_operator(self, t):
+        """
+        Контурирование оператором Собеля
+
+        :param t: порог
+        :type t: int
+
+        :return: LabImage -- объект изображения
+
+        """
         img = self.gray_image
         img_arr = np.asarray(img)
         new_img = img.copy()
@@ -36,13 +50,15 @@ class ContouredImage(LabImage):
             for x in range(w):
                 draw.point((x, y), 255 if grad_matrix_norm[y][x] > t else 0)
         self.result = new_img
-        return new_img
-
-    # Оператор Прюита
-    # Аргументы:
-    # image: изображение, класс Image
+        return self
 
     def prewitt_operator(self):
+        """
+        Контурирование оператором Собеля
+
+        :return: LabImage -- объект изображения
+
+        """
         image = self.gray_image
         w = image.size[0]
         h = image.size[1]
@@ -72,7 +88,7 @@ class ContouredImage(LabImage):
                 newgradientImage[i, j] = mag
         newgradientImage = newgradientImage / np.max(newgradientImage) * 255
         self.result = Image.fromarray(np.uint8(newgradientImage), 'L')
-        return self.result
+        return self
 
 
 # Тест
@@ -83,4 +99,4 @@ def test():
     #img.prewitt_operator().show()
     img.sobel_operator(25).show()
 
-#test()
+test()
