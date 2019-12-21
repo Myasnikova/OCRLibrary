@@ -48,8 +48,17 @@ class OCRImage:
     def get_text_profiled_image(self):
         return self.text_profiler_object.get_text_segmentation()
 
-    def get_filtered_image(self):
-        return self.filtered_image_object.median_filter()
+    def get_filtered_image(self, method=None):
+        if method is None:
+            ValueError('Undefined method: {}'.format(method))
+            return None
+        if method == 1:#медианный фильтр
+            return self.filtered_image_object.median_filter()
+        if method == 2:#взвешенный фильтр
+            return self.filtered_image_object.weighted_rank_filter(5)
+        if method == 3:#ранжированный фильтр
+            return self.filtered_image_object.rank_filter(5)
+        raise ValueError('Undefined method: {}'.format(method))
 
 
 def main():
