@@ -99,4 +99,4 @@ def test():
     #img.prewitt_operator().show()
     img.sobel_operator(25).show()
 
-test()
+#test()

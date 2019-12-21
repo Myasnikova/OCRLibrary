@@ -28,11 +28,13 @@ class CharsRecognizer(LabImage):
         super(CharsRecognizer, self).__init__(image=image, path=path)
 
         invert_img = ImageOps.invert(image.orig)
-        lab_invert_img = LabImage(pilImage=invert_img)
         self.bin_matrix = np.asarray(invert_img.convert('L'), dtype=np.uint8)
+        self.recognized_string = ""
 
         if getattr(self, 'letters_coords', None) is None:
-            self.letters_coords = TextProfiler(image=lab_invert_img).get_text_segmentation().letters_coords
+            p=TextProfiler(LabImage(pilImage=self.orig)).get_text_segmentation()
+            #self.result=p.result
+            self.letters_coords = p.letters_coords
         self.tryToRecognizeWithFont(font=font, fontSize=font_size)
 
 
@@ -59,6 +61,7 @@ class CharsRecognizer(LabImage):
 
         """
         symbols = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+        self.recognized_string = ""
         self.symbols_features= FontCharacteristics(symbols, font, fontSize,symbol_size=symbol_size).calc_characteristics()
         rec_chars = []
         g=0
@@ -87,7 +90,9 @@ class CharsRecognizer(LabImage):
                      dist = np.linalg.norm(c_features-cur_features)
                      dist_array[c] = 1-dist
                 sorted_dist = sorted(dist_array.items(), key=lambda kv: kv[1], reverse=True)
-                rec_chars.append(sorted_dist[0])
+                ch = sorted_dist[0]
+                rec_chars.append(ch)
+                self.recognized_string += ch[0]
                 dist_array.clear()
         print(rec_chars)
         self.recognized_chars = rec_chars
@@ -145,8 +150,8 @@ def createText(text, font_size=36, font = 'TNR.ttf',image_size=(600,600),filenam
 
 
 def test():
-    createText("КаЖдыЙ день Я \nЙоу\nКак Же Я заЕбалаСь")
+    #createText("")
     lab_img = LabImage("pictures_for_test/text.bmp")
     img = CharsRecognizer(image=lab_img)
-test()
+#test()
 

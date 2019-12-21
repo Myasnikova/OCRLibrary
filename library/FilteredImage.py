@@ -27,7 +27,7 @@ class FilteredImage(LabImage):
         self.filtered_matrix = None
         if getattr(self, 'bin_matrix', None) is None:
             # TODO надо бы выбрать способ бинаризации по умолчанию
-            self.bin_matrix = BinaryImage(path=path, image=image).eikvil_binarization().bin_matrix
+            self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
             # self.bin_matrix = self.grayscale_matrix
 
     def median_filter(self, wsize=3):

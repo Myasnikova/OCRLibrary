@@ -167,7 +167,7 @@ class TextProfiler(LabImage):
     """
     Класс осуществляющий выделение букв в тексте
     """
-    def __init__(self, path=None, image=None):
+    def __init__(self,image=None, path=None):
         """
         Инициализация объекта класса FilteredImage
 
@@ -179,6 +179,7 @@ class TextProfiler(LabImage):
         super(TextProfiler, self).__init__(path=path, image=image)
 
         self.work_image = self.orig.convert('L')
+        self.work_image = ImageOps.invert(self.work_image)
         self.letters_coords = []  # координаты букв на изображении
         self.result = self.orig  # после вызова метода get_text_segmentation записывается сегментарованное изображение
 
@@ -195,7 +196,7 @@ class TextProfiler(LabImage):
 
         image = self.work_image
         y_profile = get_y_profile(image)
-        rows = get_rows_in_text(y_profile, 250)
+        rows = get_rows_in_text(y_profile, 0)
         r = 0
 
         for i in rows:
@@ -220,15 +221,16 @@ class TextProfiler(LabImage):
                 k += 1
             letters_in_row = np.delete(letters_in_row, letter_part, axis=0)
             self.result = draw_segmented_row(self.result, letters_in_row)
+            #self.result.show()
             self.letters_coords.append(letters_in_row)
-
 
         return self
 
 
 def test():
-    lab_img = LabImage("pictures_for_test/B.bmp")
-    text_profile = TextProfiler(lab_img)
-    text_profile.get_text_segmentation()
+    lab_img = LabImage("pictures_for_test/text.bmp")
+    text_profile = TextProfiler(image=lab_img)
+    lab_img = text_profile.get_text_segmentation()
+    lab_img.result.show()
 
 #test()
