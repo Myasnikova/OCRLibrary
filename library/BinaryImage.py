@@ -1,11 +1,14 @@
 from tqdm import tqdm
 from math import ceil
 
-from library.core import *
-from library.exceptions import WrongWindowSize
+from core import *
+from exceptions import WrongWindowSize
 
 
 class BinaryImage(LabImage):
+    """
+    Класс бинаризации изображений
+    """
     def __init__(self, path=None, image=None, pilImage=None):
         super(BinaryImage, self).__init__(path=path, image=image, pilImage=pilImage)
 
@@ -160,7 +163,9 @@ class BinaryImage(LabImage):
         pix = self.grayscale_matrix 
 
         integr = self.calc_integ(pix) 
-        sqr_integr = self.calc_integ(np.square(pix)) 
+        npix = pix.astype(int)
+        n = np.square(npix)
+        sqr_integr = self.calc_integ(np.square(npix)) 
 
         half_w = w_size // 2
  
