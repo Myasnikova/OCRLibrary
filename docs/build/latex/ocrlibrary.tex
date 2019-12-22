@@ -74,8 +74,75 @@
 
 
 
-\chapter{Pre install requirements}
+\chapter{Pre\sphinxhyphen{}install requirements}
 \label{\detokenize{Installation:pre-install-requirements}}\label{\detokenize{Installation::doc}}
+
+\section{Подготовка к работе}
+\label{\detokenize{Installation:id1}}
+
+\subsection{Поддержка операционных систем}
+\label{\detokenize{Installation:id2}}
+Библиотеку можно использоваться на любых машинах, которые поддерживают язык программирования Python 3, среди прочих:
+\sphinxhyphen{} Windows
+\sphinxhyphen{} Mac OS X
+\sphinxhyphen{} Linux/Unix
+\sphinxhyphen{} Solaris
+Любой компьютер будет иметь необходимую производительность для ее работы. Инструкции по установке в данном руководстве предполагают использование именно вышеупомянутых ОС.
+
+
+\subsection{Рекомендуемая версия Python}
+\label{\detokenize{Installation:python}}
+Библиотека не тестировалась на совместимость с Python 2.x, поэтому следует использовать Python 3.x, рекомендуется \sphinxhyphen{} самую последнюю доступную версию ветви.
+
+
+\subsection{Откуда можно скачать библиотеку}
+\label{\detokenize{Installation:id3}}
+Для загрузки библиотеки необходимо клонировать репозиторий \sphinxhref{https://github.com/Myasnikova/OCRLibrary/tree/master/library}{github} либо выгрузить его в формате zip.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+git clone https://github.com/Myasnikova/OCRLibrary/tree/master/library
+\end{sphinxVerbatim}
+
+
+\subsection{Виртуальная среда Python}
+\label{\detokenize{Installation:id4}}
+Данную библиотеку можно использовать как в глобальной среде (наборе установленных пакетов) так и в виртуальной. Библиотека будет корректно работать в обоих случаях, однако, если в глобальной среде используются устаревшие относительно требований, описанных в порядке установки, версии библиотек, которые использует OCR, второй вариант будет удобнее и предпочтительнее.
+
+
+\section{Порядок установки}
+\label{\detokenize{Installation:id5}}
+
+\subsection{Установка Python 3}
+\label{\detokenize{Installation:python-3}}
+Для использования библиотеки OCR необходимо установить Python 3 на свою операционную систему. Также понадобится инструмент \sphinxstylestrong{Python Package Index — pip3} — который используется для управления (установка, обновление и удаление) библиотек/пакетов Python, используемых библиотекой и другими приложениями Python.
+
+Ubuntu Linux включает в себя Python 3 по умолчанию. Инструмент \sphinxstylestrong{Python Package Index}, при помощи которого вам понадобится устанавливать пакеты для Python 3 по умолчанию не установлен. Можно установить pip3 через шелл ОС при помощи команды:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+sudo apt\PYGZhy{}get install python3\PYGZhy{}pip
+\end{sphinxVerbatim}
+
+Mac OS X и Windows 10 не включают Python 3 по умолчанию \textendash{} установщик можно скачать с \sphinxhref{https://www.python.org/downloads/}{оффициального сайта}. Установщики для Windows и Mac OS включают в себя pip3 (менеджер пакетов Python) по умолчанию.
+
+
+\subsection{Установка ПО виртуальной среды}
+\label{\detokenize{Installation:id7}}
+После установки python3 и pip3 для Ubuntu, Mac OS и Windows можно установить \sphinxstylestrong{vitrualenv} из шелла ОС при помощи pip3:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+pip3 install virtualenv
+\end{sphinxVerbatim}
+
+Теперь виртуальное окружение можно создать и, при необходимости, активировать при помощи следующих команд:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+virtualenv /path/venv
+\PYG{n+nb}{source} /path/venv/bin/activate
+\end{sphinxVerbatim}
+
+
+\subsection{Установка необходимых зависимостей}
+\label{\detokenize{Installation:id8}}
 Перед использованием библиотеки OCR необходимо установить следующие пакеты языка программирования Python:
 \begin{quote}
 \begin{itemize}

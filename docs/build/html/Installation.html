@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pre install requirements &mdash; документация OCRLibrary 0.0.1</title>
+  <title>Pre-install requirements &mdash; документация OCRLibrary 0.0.1</title>
   
 
   
@@ -83,7 +83,22 @@
             
               <p class="caption"><span class="caption-text">Installation and Using:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Pre install requirements</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pre-install requirements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Подготовка к работе</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Поддержка операционных систем</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#python">Рекомендуемая версия Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Откуда можно скачать библиотеку</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Виртуальная среда Python</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">Порядок установки</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#python-3">Установка Python 3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Установка ПО виртуальной среды</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Установка необходимых зависимостей</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="UsingExample.html">Example of using library</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Library modules:</span></p>
@@ -135,7 +150,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Pre install requirements</li>
+      <li>Pre-install requirements</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -155,7 +170,59 @@
            <div itemprop="articleBody">
             
   <div class="section" id="pre-install-requirements">
-<h1>Pre install requirements<a class="headerlink" href="#pre-install-requirements" title="Ссылка на этот заголовок">¶</a></h1>
+<h1>Pre-install requirements<a class="headerlink" href="#pre-install-requirements" title="Ссылка на этот заголовок">¶</a></h1>
+<div class="section" id="id1">
+<h2>Подготовка к работе<a class="headerlink" href="#id1" title="Ссылка на этот заголовок">¶</a></h2>
+<div class="section" id="id2">
+<h3>Поддержка операционных систем<a class="headerlink" href="#id2" title="Ссылка на этот заголовок">¶</a></h3>
+<p>Библиотеку можно использоваться на любых машинах, которые поддерживают язык программирования Python 3, среди прочих:
+- Windows
+- Mac OS X
+- Linux/Unix
+- Solaris
+Любой компьютер будет иметь необходимую производительность для ее работы. Инструкции по установке в данном руководстве предполагают использование именно вышеупомянутых ОС.</p>
+</div>
+<div class="section" id="python">
+<h3>Рекомендуемая версия Python<a class="headerlink" href="#python" title="Ссылка на этот заголовок">¶</a></h3>
+<p>Библиотека не тестировалась на совместимость с Python 2.x, поэтому следует использовать Python 3.x, рекомендуется - самую последнюю доступную версию ветви.</p>
+</div>
+<div class="section" id="id3">
+<h3>Откуда можно скачать библиотеку<a class="headerlink" href="#id3" title="Ссылка на этот заголовок">¶</a></h3>
+<p>Для загрузки библиотеки необходимо клонировать репозиторий <a class="reference external" href="https://github.com/Myasnikova/OCRLibrary/tree/master/library">github</a> либо выгрузить его в формате zip.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/Myasnikova/OCRLibrary/tree/master/library
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>Виртуальная среда Python<a class="headerlink" href="#id4" title="Ссылка на этот заголовок">¶</a></h3>
+<p>Данную библиотеку можно использовать как в глобальной среде (наборе установленных пакетов) так и в виртуальной. Библиотека будет корректно работать в обоих случаях, однако, если в глобальной среде используются устаревшие относительно требований, описанных в порядке установки, версии библиотек, которые использует OCR, второй вариант будет удобнее и предпочтительнее.</p>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>Порядок установки<a class="headerlink" href="#id5" title="Ссылка на этот заголовок">¶</a></h2>
+<div class="section" id="python-3">
+<h3>Установка Python 3<a class="headerlink" href="#python-3" title="Ссылка на этот заголовок">¶</a></h3>
+<p>Для использования библиотеки OCR необходимо установить Python 3 на свою операционную систему. Также понадобится инструмент <strong>Python Package Index — pip3</strong> — который используется для управления (установка, обновление и удаление) библиотек/пакетов Python, используемых библиотекой и другими приложениями Python.</p>
+<p>Ubuntu Linux включает в себя Python 3 по умолчанию. Инструмент <strong>Python Package Index</strong>, при помощи которого вам понадобится устанавливать пакеты для Python 3 по умолчанию не установлен. Можно установить pip3 через шелл ОС при помощи команды:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get install python3-pip
+</pre></div>
+</div>
+<p>Mac OS X и Windows 10 не включают Python 3 по умолчанию – установщик можно скачать с <a class="reference external" href="https://www.python.org/downloads/">оффициального сайта</a>. Установщики для Windows и Mac OS включают в себя pip3 (менеджер пакетов Python) по умолчанию.</p>
+</div>
+<div class="section" id="id7">
+<h3>Установка ПО виртуальной среды<a class="headerlink" href="#id7" title="Ссылка на этот заголовок">¶</a></h3>
+<p>После установки python3 и pip3 для Ubuntu, Mac OS и Windows можно установить <strong>vitrualenv</strong> из шелла ОС при помощи pip3:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install virtualenv
+</pre></div>
+</div>
+<p>Теперь виртуальное окружение можно создать и, при необходимости, активировать при помощи следующих команд:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>virtualenv /path/venv
+<span class="nb">source</span> /path/venv/bin/activate
+</pre></div>
+</div>
+</div>
+<div class="section" id="id8">
+<h3>Установка необходимых зависимостей<a class="headerlink" href="#id8" title="Ссылка на этот заголовок">¶</a></h3>
 <p>Перед использованием библиотеки OCR необходимо установить следующие пакеты языка программирования Python:</p>
 <blockquote>
 <div><ul class="simple">
@@ -177,6 +244,8 @@
 </pre></div>
 </div>
 </div></blockquote>
+</div>
+</div>
 </div>
 
 
