@@ -90,13 +90,3 @@ class ContouredImage(LabImage):
         self.result = Image.fromarray(np.uint8(newgradientImage), 'L')
         return self
 
-
-# Тест
-def test():
-    lab_img = LabImage("pictures_for_test/cat.bmp")
-    img = ContouredImage(image=lab_img)
-    img.show()
-    #img.prewitt_operator().show()
-    img.sobel_operator(25).show()
-
-#test()

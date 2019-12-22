@@ -225,12 +225,3 @@ class TextProfiler(LabImage):
             self.letters_coords.append(letters_in_row)
 
         return self
-
-
-def test():
-    lab_img = LabImage("pictures_for_test/text.bmp")
-    text_profile = TextProfiler(image=lab_img)
-    lab_img = text_profile.get_text_segmentation()
-    lab_img.result.show()
-
-#test()

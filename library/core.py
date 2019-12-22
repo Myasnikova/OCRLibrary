@@ -9,21 +9,6 @@ import time
 from exceptions import ResultNotExist, NameNotPassed
 
 
-def timeit(method):
-    def timed(*args, **kw):
-        ts = time.time()
-        result = method(*args, **kw)
-        te = time.time()
-        if 'log_time' in kw:
-            name = kw.get('log_name', method.__name__.upper())
-            kw['log_time'][name] = int((te - ts) * 1000)
-        else:
-            print('%r  %2.2f ms' % \
-                  (method.__name__, (te - ts) * 1000))
-        return result
-    return timed
-
-
 class LabImage:
     """
     Базовый класс для работы с изображением.
@@ -70,21 +55,6 @@ class LabImage:
             self.gray_image = self.orig.convert('L')
             self.calc_grayscale_matrix()
 
-    def read(self, path: str):
-        """
-        Считывает изображение, расположенное по пути path, и заполняет внутренние переменные класса
-
-        :param path: путь до изображения
-        :type path: str
-        """
-        self.path = path
-
-        self.orig = Image.open(path).convert("RGB")
-        self.size = self.orig.size
-        self.height, self.width = self.size
-        self.rgb_matrix = np.array(self.orig)
-
-        self.calc_grayscale_matrix()
 
     def show(self):
         """
@@ -95,10 +65,6 @@ class LabImage:
             self.orig.show()
         else:
             self.result.show()
-
-    def invert_result(self):
-        self.result = ImageOps.invert(self.result)
-        return
 
 
     def calc_grayscale_matrix(self):

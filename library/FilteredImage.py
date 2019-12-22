@@ -28,7 +28,7 @@ class FilteredImage(LabImage):
         if getattr(self, 'bin_matrix', None) is None:
             # TODO надо бы выбрать способ бинаризации по умолчанию
             self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
-            # self.bin_matrix = self.grayscale_matrix
+            #self.bin_matrix = self.grayscale_matrix
 
     def median_filter(self, wsize=3):
         """
@@ -162,11 +162,3 @@ class FilteredImage(LabImage):
         self.result = Image.fromarray(self.filtered_matrix, 'L')
 
         return self
-
-def test():
-    im = LabImage("../sample_2.bmp")
-    im = FilteredImage(image=im)
-    im.median_filter(wsize=7)
-    # im.weighted_rank_filter(3, [[1, 2, 1], [2, 4, 2], [1, 2, 1]], 10)
-    im.show()
-

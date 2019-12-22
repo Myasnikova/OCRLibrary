@@ -1,10 +1,6 @@
-from core import LabImage
-from BinaryImage import BinaryImage
 from ContouredImage import ContouredImage
-from TextProfiler import TextProfiler
 from FilteredImage import FilteredImage
 from CharsRecognizer import *
-import numpy as np
 import PIL as pl
 
 
@@ -25,9 +21,6 @@ class OCRImage:
 
     def save(self, path):
         self.lab_image.save(path)
-
-    def get_grayscale_image(self):
-        return self.lab_image.gray_image
 
     def get_binary_image(self, method=None, _rsize=3, _Rsize=15, _eps=15, _w_size=15, _k=0.5):
         if method is None:
@@ -51,9 +44,10 @@ class OCRImage:
             return self.lab_image.result
         raise ValueError('Undefined method: {}'.format(method))
 
-    def get_text_profiled_image(self, text="Привет мир", font_size=36, font='TNR.ttf', image_size=(600, 600), filename="text"):
+    def get_text_profiled_image(self, text="Привет мир", font_size=36, font='TNR.ttf', image_size=(600, 600),
+                                filename="text"):
         createText(text, font_size, font, image_size, filename)
-        self.lab_image = LabImage("pictures_for_test/"+filename+".bmp")
+        self.lab_image = LabImage("pictures_for_test/" + filename + ".bmp")
         self.text_profiler_object = TextProfiler(image=self.lab_image)
         self.lab_image = self.text_profiler_object.get_text_segmentation()
         return self.lab_image.result
@@ -80,13 +74,4 @@ class OCRImage:
             return self.lab_image.result
         raise ValueError('Undefined method: {}'.format(method))
 
-
-def main():
-    img = OCRImage("pictures_for_test/text.bmp")
-    #img.filtered_image_object.median_filter()
-    img.binary_image_object.cristian_binarisation()
-    img.show_result()
-
-
-#main()
 

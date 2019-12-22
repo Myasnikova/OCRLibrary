@@ -149,9 +149,3 @@ def createText(text, font_size=36, font = 'TNR.ttf',image_size=(600,600),filenam
     im.save("pictures_for_test/"+filename+".bmp")
 
 
-def test():
-    #createText("")
-    lab_img = LabImage("pictures_for_test/text.bmp")
-    img = CharsRecognizer(image=lab_img)
-#test()
-

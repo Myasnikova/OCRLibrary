@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <title>Coverage for FilteredImage.py: 72%</title>
+    <title>Coverage for FilteredImage.py: 82%</title>
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript" src="jquery.hotkeys.js"></script>
@@ -17,13 +17,13 @@
 <div id="header">
     <div class="content">
         <h1>Coverage for <b>FilteredImage.py</b> :
-            <span class="pc_cov">72%</span>
+            <span class="pc_cov">82%</span>
         </h1>
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
         <h2 class="stats">
-            81 statements &nbsp;
-            <span class="run shortkey_r button_toggle_run">58 run</span>
-            <span class="mis show_mis shortkey_m button_toggle_mis">23 missing</span>
+            76 statements &nbsp;
+            <span class="run shortkey_r button_toggle_run">62 run</span>
+            <span class="mis show_mis shortkey_m button_toggle_mis">14 missing</span>
             <span class="exc show_exc shortkey_x button_toggle_exc">0 excluded</span>
         </h2>
     </div>
@@ -75,12 +75,12 @@
     <p id="t22" class="pln"><span class="n"><a href="#t22">22</a></span><span class="t"><span class="str">        :param image: &#1101;&#1082;&#1079;&#1077;&#1084;&#1087;&#1083;&#1103;&#1088; &#1082;&#1083;&#1072;&#1089;&#1089;&#1072; LabImage</span>&nbsp;</span><span class="r"></span></p>
     <p id="t23" class="pln"><span class="n"><a href="#t23">23</a></span><span class="t"><span class="str">        :type image: LabImage or None</span>&nbsp;</span><span class="r"></span></p>
     <p id="t24" class="pln"><span class="n"><a href="#t24">24</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t25" class="mis show_mis"><span class="n"><a href="#t25">25</a></span><span class="t">        <span class="nam">super</span><span class="op">(</span><span class="nam">FilteredImage</span><span class="op">,</span> <span class="nam">self</span><span class="op">)</span><span class="op">.</span><span class="nam">__init__</span><span class="op">(</span><span class="nam">path</span><span class="op">=</span><span class="nam">path</span><span class="op">,</span> <span class="nam">image</span><span class="op">=</span><span class="nam">image</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t25" class="run"><span class="n"><a href="#t25">25</a></span><span class="t">        <span class="nam">super</span><span class="op">(</span><span class="nam">FilteredImage</span><span class="op">,</span> <span class="nam">self</span><span class="op">)</span><span class="op">.</span><span class="nam">__init__</span><span class="op">(</span><span class="nam">path</span><span class="op">=</span><span class="nam">path</span><span class="op">,</span> <span class="nam">image</span><span class="op">=</span><span class="nam">image</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t26" class="pln"><span class="n"><a href="#t26">26</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t27" class="mis show_mis"><span class="n"><a href="#t27">27</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">filtered_matrix</span> <span class="op">=</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t28" class="mis show_mis"><span class="n"><a href="#t28">28</a></span><span class="t">        <span class="key">if</span> <span class="nam">getattr</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="str">'bin_matrix'</span><span class="op">,</span> <span class="key">None</span><span class="op">)</span> <span class="key">is</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t27" class="run"><span class="n"><a href="#t27">27</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">filtered_matrix</span> <span class="op">=</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t28" class="run"><span class="n"><a href="#t28">28</a></span><span class="t">        <span class="key">if</span> <span class="nam">getattr</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="str">'bin_matrix'</span><span class="op">,</span> <span class="key">None</span><span class="op">)</span> <span class="key">is</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t29" class="pln"><span class="n"><a href="#t29">29</a></span><span class="t">            <span class="com"># TODO &#1085;&#1072;&#1076;&#1086; &#1073;&#1099; &#1074;&#1099;&#1073;&#1088;&#1072;&#1090;&#1100; &#1089;&#1087;&#1086;&#1089;&#1086;&#1073; &#1073;&#1080;&#1085;&#1072;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1080; &#1087;&#1086; &#1091;&#1084;&#1086;&#1083;&#1095;&#1072;&#1085;&#1080;&#1102;</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t30" class="mis show_mis"><span class="n"><a href="#t30">30</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">bin_matrix</span> <span class="op">=</span> <span class="nam">BinaryImage</span><span class="op">(</span><span class="nam">path</span><span class="op">=</span><span class="nam">path</span><span class="op">,</span> <span class="nam">image</span><span class="op">=</span><span class="nam">image</span><span class="op">)</span><span class="op">.</span><span class="nam">cristian_binarisation</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">bin_matrix</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t30" class="run"><span class="n"><a href="#t30">30</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">bin_matrix</span> <span class="op">=</span> <span class="nam">BinaryImage</span><span class="op">(</span><span class="nam">path</span><span class="op">=</span><span class="nam">path</span><span class="op">,</span> <span class="nam">image</span><span class="op">=</span><span class="nam">image</span><span class="op">)</span><span class="op">.</span><span class="nam">cristian_binarisation</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">bin_matrix</span>&nbsp;</span><span class="r"></span></p>
     <p id="t31" class="pln"><span class="n"><a href="#t31">31</a></span><span class="t">            <span class="com"># self.bin_matrix = self.grayscale_matrix</span>&nbsp;</span><span class="r"></span></p>
     <p id="t32" class="pln"><span class="n"><a href="#t32">32</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t33" class="mis show_mis"><span class="n"><a href="#t33">33</a></span><span class="t">    <span class="key">def</span> <span class="nam">median_filter</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">wsize</span><span class="op">=</span><span class="num">3</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -216,19 +216,12 @@
     <p id="t163" class="pln"><span class="n"><a href="#t163">163</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t164" class="run"><span class="n"><a href="#t164">164</a></span><span class="t">        <span class="key">return</span> <span class="nam">self</span>&nbsp;</span><span class="r"></span></p>
     <p id="t165" class="pln"><span class="n"><a href="#t165">165</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t166" class="mis show_mis"><span class="n"><a href="#t166">166</a></span><span class="t"><span class="key">def</span> <span class="nam">test</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t167" class="mis show_mis"><span class="n"><a href="#t167">167</a></span><span class="t">    <span class="nam">im</span> <span class="op">=</span> <span class="nam">LabImage</span><span class="op">(</span><span class="str">"../sample_2.bmp"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t168" class="mis show_mis"><span class="n"><a href="#t168">168</a></span><span class="t">    <span class="nam">im</span> <span class="op">=</span> <span class="nam">FilteredImage</span><span class="op">(</span><span class="nam">image</span><span class="op">=</span><span class="nam">im</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t169" class="mis show_mis"><span class="n"><a href="#t169">169</a></span><span class="t">    <span class="nam">im</span><span class="op">.</span><span class="nam">median_filter</span><span class="op">(</span><span class="nam">wsize</span><span class="op">=</span><span class="num">7</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t170" class="pln"><span class="n"><a href="#t170">170</a></span><span class="t">    <span class="com"># im.weighted_rank_filter(3, [[1, 2, 1], [2, 4, 2], [1, 2, 1]], 10)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t171" class="mis show_mis"><span class="n"><a href="#t171">171</a></span><span class="t">    <span class="nam">im</span><span class="op">.</span><span class="nam">show</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t172" class="pln"><span class="n"><a href="#t172">172</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
 </div>
 <div id="footer">
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.0</a>,
-            created at 2019-12-21 21:14
+            created at 2019-12-22 11:21
         </p>
     </div>
 </div>
