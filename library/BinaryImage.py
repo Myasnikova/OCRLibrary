@@ -7,12 +7,14 @@ from exceptions import WrongWindowSize
 
 class BinaryImage(LabImage):
     """
-    Класс бинаризации изображений
+    Класс осуществляющий бинаризацию переданного на вход изображения следующими методами:
+        - :meth:`~BinaryImage.eikvil_binarisation` -- метод Эйквила
+        - :meth:`~BinaryImage.cristian_binarisation` -- метод Кристиана
     """
     def __init__(self, path=None, image=None, pilImage=None):
         super(BinaryImage, self).__init__(path=path, image=image, pilImage=pilImage)
 
-    def eikvil_binarization(self, rsize=3, Rsize=15, eps=15):
+    def eikvil_binarisation(self, rsize=3, Rsize=15, eps=15):
         """
         Бинаризация изображения методом Эйквила
 
@@ -20,11 +22,11 @@ class BinaryImage(LabImage):
         :type rsize: int
         :param Rsize: размер большего окна
         :type Rsize: int
-        :param eps: величина отклонения для математических ожиданий чёрного и белого, в пределах которого можно считать,
-        что они отличются несущественно
+        :param eps: величина отклонения для математических ожиданий чёрного и белого, в пределах которого можно считать \
+        , что они отличются несущественно
         :type eps: int
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         :raises: WrongWindowSize
         """
@@ -129,7 +131,7 @@ class BinaryImage(LabImage):
         else:
             raise WrongWindowSize("Rsize={} and rsize={} must be even or odd both together".format(Rsize, rsize))
 
-    def calc_integ(self, img):
+    def calc_integ(self, img: np.ndarray):
          """
          Расчет интегрального изображения из исходного
 
@@ -155,7 +157,9 @@ class BinaryImage(LabImage):
         :param w_size: размер окна
         :type w_size: int
         :param k: коэффициент, отвечающий за чувствительность бинаризатора
-        :type k: int
+        :type k: float
+
+        :return: :class:`~core.LabImage` -- объект изображения
         """
         if self.grayscale_matrix is None:
                 self.calc_grayscale_matrix()
@@ -205,4 +209,5 @@ class BinaryImage(LabImage):
         img = ((self.grayscale_matrix >= thresholds) * 255).astype(np.uint8) #255, если больше, 0 если меньше
         self.result = Image.fromarray(np.uint8(img) , 'L')
         self.bin_matrix = img
+
         return self

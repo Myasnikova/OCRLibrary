@@ -1,0 +1,358 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="ru" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="ru" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>TextProfiler &mdash; документация OCRLibrary 0.0.1</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="_static/translations.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="next" title="CharsRecognizer" href="CharsRecognizer.html" />
+    <link rel="prev" title="FontCharacteristics" href="FontCharacteristics.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> OCRLibrary
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Installation and Using:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Pre install requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UsingExample.html">Example of using library</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Library modules:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="OCRImage.html">OCRImage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="BuiltIn.html">Built-in Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="BaseImage.html">LabImage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BinaryImage.html">BinaryImage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FilteredImage.html">FilteredImage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ContouredImage.html">ContouredImage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SymbolImage.html">SymbolImage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FontCharacteristics.html">FontCharacteristics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">TextProfiler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CharsRecognizer.html">CharsRecognizer</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">OCRLibrary</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="BuiltIn.html">Built-in Modules</a> &raquo;</li>
+        
+      <li>TextProfiler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/TextProfiler.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="textprofiler">
+<h1>TextProfiler<a class="headerlink" href="#textprofiler" title="Ссылка на этот заголовок">¶</a></h1>
+<dl class="class">
+<dt id="TextProfiler.TextProfiler">
+<em class="property">class </em><code class="sig-prename descclassname">TextProfiler.</code><code class="sig-name descname">TextProfiler</code><span class="sig-paren">(</span><em class="sig-param">image=None</em>, <em class="sig-param">path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#TextProfiler.TextProfiler" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Класс осуществляющий выделение букв в тексте</p>
+<dl class="method">
+<dt id="TextProfiler.TextProfiler.get_text_segmentation">
+<code class="sig-name descname">get_text_segmentation</code><span class="sig-paren">(</span><em class="sig-param">t=0</em><span class="sig-paren">)</span><a class="headerlink" href="#TextProfiler.TextProfiler.get_text_segmentation" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение координат символов на изображении</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>int</em>) – порог</p>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p><a class="reference internal" href="BaseImage.html#core.LabImage" title="core.LabImage"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabImage</span></code></a> – объект изображения</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-TextProfiler"></span><dl class="function">
+<dt id="TextProfiler.get_y_profile">
+<code class="sig-prename descclassname">TextProfiler.</code><code class="sig-name descname">get_y_profile</code><span class="sig-paren">(</span><em class="sig-param">img</em><span class="sig-paren">)</span><a class="headerlink" href="#TextProfiler.get_y_profile" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение вертикального профиля изображения</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>img</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code>) – изображение</p>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code> – массив с профилем изображения</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="TextProfiler.get_x_profile">
+<code class="sig-prename descclassname">TextProfiler.</code><code class="sig-name descname">get_x_profile</code><span class="sig-paren">(</span><em class="sig-param">img</em><span class="sig-paren">)</span><a class="headerlink" href="#TextProfiler.get_x_profile" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение горизонтального профиля изображения</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>img</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code>) – изображение</p>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code> – массив с профилем изображения</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="TextProfiler.find_zero">
+<code class="sig-prename descclassname">TextProfiler.</code><code class="sig-name descname">find_zero</code><span class="sig-paren">(</span><em class="sig-param">arr</em>, <em class="sig-param">t</em><span class="sig-paren">)</span><a class="headerlink" href="#TextProfiler.find_zero" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Подсчет нулей в профиле изображения</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – профиль</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – порог</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p>int – количество нулей</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="TextProfiler.get_zones">
+<code class="sig-prename descclassname">TextProfiler.</code><code class="sig-name descname">get_zones</code><span class="sig-paren">(</span><em class="sig-param">prof</em>, <em class="sig-param">r</em>, <em class="sig-param">t</em><span class="sig-paren">)</span><a class="headerlink" href="#TextProfiler.get_zones" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Опрделение координат зон текста: для вертикального профиля - строки, для горизонтального - буквы</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prof</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – профиль</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – порог</p></li>
+<li><p><strong>r</strong> (<em>размер окна</em>) – размер окна</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p>int – количество нулей</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="TextProfiler.get_letters_in_row">
+<code class="sig-prename descclassname">TextProfiler.</code><code class="sig-name descname">get_letters_in_row</code><span class="sig-paren">(</span><em class="sig-param">prof</em>, <em class="sig-param">y_start</em>, <em class="sig-param">y_end</em>, <em class="sig-param">t</em><span class="sig-paren">)</span><a class="headerlink" href="#TextProfiler.get_letters_in_row" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Опрделение координат букв</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prof</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – профиль</p></li>
+<li><p><strong>y_start</strong> (<em>int</em>) – координаты начала строки</p></li>
+<li><p><strong>y_end</strong> (<em>int</em>) – координаты конца строки</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – порог</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code> – координаты букв</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="TextProfiler.get_rows_in_text">
+<code class="sig-prename descclassname">TextProfiler.</code><code class="sig-name descname">get_rows_in_text</code><span class="sig-paren">(</span><em class="sig-param">prof</em>, <em class="sig-param">t</em><span class="sig-paren">)</span><a class="headerlink" href="#TextProfiler.get_rows_in_text" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Опрделение координат строк</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prof</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – горизональный профиль</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – порог</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code> – координаты строк</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="TextProfiler.draw_segmented_row">
+<code class="sig-prename descclassname">TextProfiler.</code><code class="sig-name descname">draw_segmented_row</code><span class="sig-paren">(</span><em class="sig-param">img</em>, <em class="sig-param">zones</em><span class="sig-paren">)</span><a class="headerlink" href="#TextProfiler.draw_segmented_row" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Отрисовка сегментации текста на буквы</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code>) – изображение</p></li>
+<li><p><strong>zones</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – координаты букв</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code> - размеченное изображение</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="CharsRecognizer.html" class="btn btn-neutral float-right" title="CharsRecognizer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="FontCharacteristics.html" class="btn btn-neutral float-left" title="FontCharacteristics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, A. Andreev, V. Loik, E. Myasnikova, K. Sharov
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

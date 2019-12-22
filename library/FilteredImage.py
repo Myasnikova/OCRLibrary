@@ -9,9 +9,9 @@ from BinaryImage import BinaryImage
 class FilteredImage(LabImage):
     """
     Класс осуществляющий фильтрацию переданного на вход изображения следующими методами:
-        - медианная фильтрация
-        - ранговая фильтрация
-        - взвешанная ранговая фильтрация
+        - :meth:`~FilteredImage.median_filter` -- медианная фильтрация
+        - :meth:`~FilteredImage.rank_filter` -- ранговая фильтрация
+        - :meth:`~FilteredImage.weighted_rank_filter` -- взвешанная ранговая фильтрация
     """
     def __init__(self, path=None, image=None):
         """
@@ -19,8 +19,8 @@ class FilteredImage(LabImage):
 
         :param path: путь до изображения
         :type path: str or None
-        :param image: экземпляр класса LabImage
-        :type image: LabImage or None
+        :param image: экземпляр класса :class:`~core.LabImage`
+        :type image: :class:`~core.LabImage` or None
         """
         super(FilteredImage, self).__init__(path=path, image=image)
 
@@ -37,7 +37,7 @@ class FilteredImage(LabImage):
         :param wsize: размер окна фильтрации
         :type wsize: int
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         :raises: WrongWindowSize
         """
@@ -79,7 +79,7 @@ class FilteredImage(LabImage):
         :param wsize: размер окна фильтрации (поддерживаются только окна размера 3 или 5)
         :type wsize: int
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         :raises: WrongWindowSize
         """
@@ -134,7 +134,7 @@ class FilteredImage(LabImage):
         :param wsize: размер окна фильтрации (поддерживаются только окна размера 3 или 5)
         :type wsize: int
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         :raises: WrongWindowSize, WrongRank
         """

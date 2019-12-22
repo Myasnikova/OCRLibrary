@@ -3,11 +3,12 @@ from PIL import Image, ImageDraw
 import numpy as np
 import math
 
+
 class ContouredImage(LabImage):
     """
     Класс осуществляющий выделение контуров переданного на вход изображения следующими методами:
-         - контурирование оператором Пюитт
-         - контурирование оператором Собеля
+         - :meth:`~ContouredImage.prewitt_operator` -- контурирование оператором Пюитт
+         - :meth:`~ContouredImage.sobel_operator` -- контурирование оператором Собеля
     """
     def __init__(self, path=None, image=None):
         """
@@ -15,8 +16,8 @@ class ContouredImage(LabImage):
 
         :param path: путь до изображения
         :type path: str or None
-        :param image: экземпляр класса LabImage
-        :type image: LabImage or None
+        :param image: экземпляр класса :class:`~core.LabImage`
+        :type image: :class:`~core.LabImage` or None
         """
         super(ContouredImage, self).__init__(path=path, image=image)
 
@@ -27,7 +28,7 @@ class ContouredImage(LabImage):
         :param t: порог
         :type t: int
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         """
         img = self.gray_image
@@ -56,7 +57,7 @@ class ContouredImage(LabImage):
         """
         Контурирование оператором Собеля
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         """
         image = self.gray_image
@@ -89,4 +90,3 @@ class ContouredImage(LabImage):
         newgradientImage = newgradientImage / np.max(newgradientImage) * 255
         self.result = Image.fromarray(np.uint8(newgradientImage), 'L')
         return self
-
