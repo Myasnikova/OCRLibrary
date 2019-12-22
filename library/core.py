@@ -14,9 +14,10 @@ class LabImage:
     Базовый класс для работы с изображением.
 
     Может быть инициализирован следующими способами:
-        - передачей параметра path
-        - передачей существующего экземпляра класса
-        - иниализация пустыми параметрами с дальнейшим вызовом функции read
+        - передачей параметра **path**
+        - передачей существующего экземпляра класса :class:`~core.LabImage`
+        - передачей существующего экземпляра класса :class:`~PIL.Image`
+        - иниализация пустыми параметрами с дальнейшим вызовом функции :meth:`~LabImage.read`
     """
     def __init__(self, path=None, image=None, pilImage=None):
         """
@@ -24,8 +25,10 @@ class LabImage:
 
         :param path: путь до изображения
         :type path: str or None
-        :param image: экземпляр класса LabImage
-        :type image: LabImage or None
+        :param image: экземпляр класса :class:`~core.LabImage`
+        :type image: :class:`~core.LabImage` or None
+        :param pilImage: экземпляр класса :class:`~core.LabImage`
+        :type pilImage: :class:`~core.LabImage`
         """
         self.path = path
         self.result = None

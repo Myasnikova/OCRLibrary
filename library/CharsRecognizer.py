@@ -16,8 +16,8 @@ class CharsRecognizer(LabImage):
         :param path: путь до изображения
         :type path: str or None
 
-        :param image: экземпляр класса LabImage
-        :type image: LabImage or None
+        :param image: экземпляр класса :class:`~core.LabImage`
+        :type image: :class:`~core.LabImage` or None
 
         :param font: путь до файла шрифта
         :type font: str or None
@@ -45,8 +45,8 @@ class CharsRecognizer(LabImage):
         :param path: путь до изображения
         :type path: str or None
 
-        :param image: экземпляр класса LabImage
-        :type image: LabImage or None
+        :param image: экземпляр класса :class:`~core.LabImage`
+        :type image: :class:`~core.LabImage` or None
 
         :param font: путь до файла шрифта
         :type font: str or None
@@ -57,7 +57,7 @@ class CharsRecognizer(LabImage):
         :param symbol_size: размер символа
         :type symbol_size: tuple
 
-        :return: LabImage -- объект изображения
+        :return: str -- распознаные символы
 
         """
         symbols = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
@@ -147,5 +147,3 @@ def createText(text, font_size=36, font = 'TNR.ttf',image_size=(600,600),filenam
             x+=dx+xl
         y += dy+max
     im.save("pictures_for_test/"+filename+".bmp")
-
-

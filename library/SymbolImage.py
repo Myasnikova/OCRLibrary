@@ -36,8 +36,8 @@ class SymbolImage(LabImage):
     def calc_characteristics(self):
         """
         Функция вычисления характеристик букв алфавита
-        :return: dict -- характеристики букв
 
+        :return: dict -- характеристики символа
         """
         m, n = self.bin_matrix.shape
 
@@ -143,6 +143,7 @@ class FontCharacteristics:
     def to_csv(self, name: str):
         """
         Создание файла с характеристиками символов алфавита .csv
+
         :param name: путь до файла csv
         :type name: str or None
         """
@@ -168,6 +169,3 @@ class FontCharacteristics:
                 raise ResultNotExist("No such results for saving it to {}".format(name))
         else:
             raise NameNotPassed("Name of file must contain some symbols")
-
-
-#FontCharacteristics("АБВГДЕ").calc_characteristics().to_csv('result.csv')

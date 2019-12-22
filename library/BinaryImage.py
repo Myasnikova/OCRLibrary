@@ -1,6 +1,5 @@
 from tqdm import tqdm
 from PIL import ImageDraw
-import cv2
 from math import ceil
 
 from core import *
@@ -9,12 +8,14 @@ from exceptions import WrongWindowSize
 
 class BinaryImage(LabImage):
     """
-    Класс бинаризации изображений
+    Класс осуществляющий бинаризацию переданного на вход изображения следующими методами:
+        - :meth:`~BinaryImage.eikvil_binarisation` -- метод Эйквила
+        - :meth:`~BinaryImage.cristian_binarisation` -- метод Кристиана
     """
     def __init__(self, path=None, image=None, pilImage=None):
         super(BinaryImage, self).__init__(path=path, image=image, pilImage=pilImage)
 
-    def eikvil_binarization(self, rsize=3, Rsize=15, eps=15):
+    def eikvil_binarisation(self, rsize=3, Rsize=15, eps=15):
         """
         Бинаризация изображения методом Эйквила
 
@@ -22,11 +23,11 @@ class BinaryImage(LabImage):
         :type rsize: int
         :param Rsize: размер большего окна
         :type Rsize: int
-        :param eps: величина отклонения для математических ожиданий чёрного и белого, в пределах которого можно считать,
-        что они отличются несущественно
+        :param eps: величина отклонения для математических ожиданий чёрного и белого, в пределах которого можно считать \
+        , что они отличются несущественно
         :type eps: int
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         :raises: WrongWindowSize
         """
@@ -131,7 +132,7 @@ class BinaryImage(LabImage):
         else:
             raise WrongWindowSize("Rsize={} and rsize={} must be even or odd both together".format(Rsize, rsize))
 
-    def calc_integ(self, img):
+    def calc_integ(self, img: np.ndarray):
          """
          Расчет интегрального изображения из исходного
 
@@ -157,7 +158,9 @@ class BinaryImage(LabImage):
         :param w_size: размер окна
         :type w_size: int
         :param k: коэффициент, отвечающий за чувствительность бинаризатора
-        :type k: int
+        :type k: float
+
+        :return: :class:`~core.LabImage` -- объект изображения
         """
         if self.grayscale_matrix is None:
                 self.calc_grayscale_matrix()
@@ -219,7 +222,8 @@ def otsu(image):
 
     :return: int -- порог бинаризации
     """
-    hist = cv2.calcHist([np.asarray(image)], [0], None, [256], [0, 256])
+    hist = (np.histogram(image, bins=256)[0]) / image.size[0] * image.size[1]
+    #hist = cv2.calcHist([np.asarray(image)], [0], None, [256], [0, 256])
     bins = np.arange(256)
     hist_norm = hist.ravel() / hist.max()
     Q = np.cumsum(hist_norm)
@@ -252,7 +256,7 @@ def get_bin_by_tresh(image):
     :param image: изображение
     :type PIL.Image
 
-    :return: PIL.Image -- порог бинаризации
+    :return: :class:`~PIL.Image` -- бинаризованное изображение
     """
     width = image.size[0]
     height = image.size[1]
@@ -267,3 +271,4 @@ def get_bin_by_tresh(image):
             else:
                 draw.point((x, y), 0)
     return new_img
+
