@@ -3,14 +3,15 @@ from PIL import Image, ImageDraw, ImageOps
 import numpy as np
 import math
 
+
 def get_y_profile(img):
     """
     Получение вертикального профиля изображения
 
     :param img: изображение
-    :type img: PIL.Image
+    :type img: :class:`~PIL.Image`
 
-    :return: numpy.ndarray -- массив с профилем изображения
+    :return: :class:`~numpy.ndarray` -- массив с профилем изображения
 
     """
     h = img.size[1]
@@ -20,14 +21,15 @@ def get_y_profile(img):
         prof.append(np.sum(arr[y]))
     return prof
 
+
 def get_x_profile(img):
     """
     Получение горизонтального профиля изображения
 
     :param img: изображение
-    :type img: PIL.Image
+    :type img: :class:`~PIL.Image`
 
-    :return: numpy.ndarray -- массив с профилем изображения
+    :return: :class:`~numpy.ndarray` -- массив с профилем изображения
 
     """
     w = img.size[0]
@@ -43,7 +45,7 @@ def find_zero(arr, t):
     Подсчет нулей в профиле изображения
 
     :param arr: профиль
-    :type arr: numpy.ndarray
+    :type arr: :class:`~numpy.ndarray`
 
     :param t: порог
     :type t: int
@@ -63,7 +65,7 @@ def get_zones(prof, r, t):
     Опрделение координат зон текста: для вертикального профиля - строки, для горизонтального - буквы
 
     :param prof: профиль
-    :type prof: numpy.ndarray
+    :type prof: :class:`~numpy.ndarray`
 
     :param t: порог
     :type t: int
@@ -98,7 +100,7 @@ def get_letters_in_row(prof, y_start, y_end,t):
     Опрделение координат букв
 
     :param prof: профиль
-    :type prof: numpy.ndarray
+    :type prof: :class:`~numpy.ndarray`
 
     :param y_start: координаты начала строки
     :type y_start: int
@@ -109,7 +111,7 @@ def get_letters_in_row(prof, y_start, y_end,t):
     :param t: порог
     :type t: int
 
-    :return: numpy.ndarray -- координаты букв
+    :return: :class:`~numpy.ndarray` -- координаты букв
 
     """
     r = 1
@@ -123,12 +125,12 @@ def get_rows_in_text(prof, t):
     Опрделение координат строк
 
     :param prof: горизональный профиль
-    :type prof: numpy.ndarray
+    :type prof: :class:`~numpy.ndarray`
 
     :param t: порог
     :type t: int
 
-    :return: numpy.ndarray -- координаты строк
+    :return: :class:`~numpy.ndarray` -- координаты строк
 
     """
     zones = get_zones(prof, 3, t)
@@ -140,12 +142,12 @@ def draw_segmented_row(img, zones):
     Отрисовка сегментации текста на буквы
 
     :param img: изображение
-    :type img: PIL.Image
+    :type img: :class:`~PIL.Image`
 
     :param zones: координаты букв
-    :type zones: numpy.ndarray
+    :type zones: :class:`~numpy.ndarray`
 
-    :return: PIL.Image - размеченное изображение
+    :return: :class:`~PIL.Image` - размеченное изображение
 
     """
     new_img = img.copy()
@@ -167,14 +169,14 @@ class TextProfiler(LabImage):
     """
     Класс осуществляющий выделение букв в тексте
     """
-    def __init__(self,image=None, path=None):
+    def __init__(self, image=None, path=None):
         """
-        Инициализация объекта класса FilteredImage
+        Инициализация объекта класса TextProfiler
 
         :param path: путь до изображения
         :type path: str or None
-        :param image: экземпляр класса LabImage
-        :type image: LabImage or None
+        :param image: экземпляр класса :class:`~core.LabImage`
+        :type image: :class:`~core.LabImage` or None
         """
         super(TextProfiler, self).__init__(path=path, image=image)
 
@@ -190,7 +192,7 @@ class TextProfiler(LabImage):
         :param t: порог
         :type t: int
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         """
 
@@ -225,12 +227,3 @@ class TextProfiler(LabImage):
             self.letters_coords.append(letters_in_row)
 
         return self
-
-
-def test():
-    lab_img = LabImage("pictures_for_test/text.bmp")
-    text_profile = TextProfiler(image=lab_img)
-    lab_img = text_profile.get_text_segmentation()
-    lab_img.result.show()
-
-#test()
