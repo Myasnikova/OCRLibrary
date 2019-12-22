@@ -59,7 +59,4 @@ path = "pictures_for_test/cat.bmp"
 text = "Гори в адУ"
 
 cov_test(text, path)
-#img = OCRImage(path)
-#test_filteration(img)
-
 

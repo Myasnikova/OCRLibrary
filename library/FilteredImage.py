@@ -1,9 +1,5 @@
-from tqdm import tqdm
-
-from core import *
 from exceptions import WrongRank, WrongWindowSize
-
-from BinaryImage import BinaryImage
+from BinaryImage import *
 
 
 class FilteredImage(LabImage):
@@ -27,7 +23,10 @@ class FilteredImage(LabImage):
         self.filtered_matrix = None
         if getattr(self, 'bin_matrix', None) is None:
             # TODO надо бы выбрать способ бинаризации по умолчанию
-            self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
+            img = get_bin_by_tresh(self.gray_image)
+            arr = np.asarray(img, dtype=np.uint8)
+            self.bin_matrix = arr
+            #self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
             #self.bin_matrix = self.grayscale_matrix
 
     def median_filter(self, wsize=3):
