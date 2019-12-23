@@ -48,7 +48,7 @@ class OCRImage:
 
         :raises: ValueError
         """
-        self.result = self.lab_image.gray_image
+        self.lab_image.result = self.lab_image.gray_image
         return self.result
 
 
