@@ -1,4 +1,5 @@
 from tqdm import tqdm
+from PIL import ImageDraw
 from math import ceil
 
 from core import *
@@ -6,10 +7,15 @@ from exceptions import WrongWindowSize
 
 
 class BinaryImage(LabImage):
+    """
+    Класс осуществляющий бинаризацию переданного на вход изображения следующими методами:
+        - :meth:`~BinaryImage.eikvil_binarisation` -- метод Эйквила
+        - :meth:`~BinaryImage.cristian_binarisation` -- метод Кристиана
+    """
     def __init__(self, path=None, image=None, pilImage=None):
         super(BinaryImage, self).__init__(path=path, image=image, pilImage=pilImage)
 
-    def eikvil_binarization(self, rsize=3, Rsize=15, eps=15):
+    def eikvil_binarisation(self, rsize=3, Rsize=15, eps=15):
         """
         Бинаризация изображения методом Эйквила
 
@@ -17,11 +23,11 @@ class BinaryImage(LabImage):
         :type rsize: int
         :param Rsize: размер большего окна
         :type Rsize: int
-        :param eps: величина отклонения для математических ожиданий чёрного и белого, в пределах которого можно считать,
-        что они отличются несущественно
+        :param eps: величина отклонения для математических ожиданий чёрного и белого, в пределах которого можно считать \
+        , что они отличются несущественно
         :type eps: int
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         :raises: WrongWindowSize
         """
@@ -126,7 +132,7 @@ class BinaryImage(LabImage):
         else:
             raise WrongWindowSize("Rsize={} and rsize={} must be even or odd both together".format(Rsize, rsize))
 
-    def calc_integ(self, img):
+    def calc_integ(self, img: np.ndarray):
          """
          Расчет интегрального изображения из исходного
 
@@ -152,7 +158,9 @@ class BinaryImage(LabImage):
         :param w_size: размер окна
         :type w_size: int
         :param k: коэффициент, отвечающий за чувствительность бинаризатора
-        :type k: int
+        :type k: float
+
+        :return: :class:`~core.LabImage` -- объект изображения
         """
         if self.grayscale_matrix is None:
                 self.calc_grayscale_matrix()
@@ -203,3 +211,64 @@ class BinaryImage(LabImage):
         self.result = Image.fromarray(np.uint8(img) , 'L')
         self.bin_matrix = img
         return self
+
+
+def otsu(image):
+    """
+    Метод Отсу
+
+    :param image: изображение
+    :type PIL.Image
+
+    :return: int -- порог бинаризации
+    """
+    hist = (np.histogram(image, bins=256)[0]) / image.size[0] * image.size[1]
+    #hist = cv2.calcHist([np.asarray(image)], [0], None, [256], [0, 256])
+    bins = np.arange(256)
+    hist_norm = hist.ravel() / hist.max()
+    Q = np.cumsum(hist_norm)
+    fn_min = np.inf
+    thresh = -1
+    for i in list(range(1, 256)):
+        p1, p2 = np.hsplit(hist_norm, [i])  # probabilities
+        q1, q2 = Q[i], Q[255] - Q[i]  # cum sum of classes
+        if q1 == 0:
+            q1 = 0.00000001
+        if q2 == 0:
+            q2 = 0.00000001
+        b1, b2 = np.hsplit(bins, [i])  # weights
+        # finding means and variances
+        m1, m2 = np.sum(p1 * b1) / q1, np.sum(p2 * b2) / q2
+        v1, v2 = np.sum(((b1 - m1) ** 2) * p1) / q1, np.sum(((b2 - m2) ** 2) * p2) / q2
+        # calculates the minimization function
+        fn = v1 * q1 + v2 * q2
+        if fn < fn_min:
+            fn_min = fn
+            thresh = i
+            res_m1, res_m2 = m1, m2
+    return thresh
+
+
+def get_bin_by_tresh(image):
+    """
+    Глобальная бинаризация методом Отсу
+
+    :param image: изображение
+    :type PIL.Image
+
+    :return: :class:`~PIL.Image` -- бинаризованное изображение
+    """
+    width = image.size[0]
+    height = image.size[1]
+    pix = image.load()
+    treshold = otsu(image)
+    new_img = Image.new('L',(width,height))
+    draw = ImageDraw.Draw(new_img)
+    for x in range(width):
+        for y in range(height):
+            if pix[x, y] > treshold:
+                draw.point((x, y), 255)
+            else:
+                draw.point((x, y), 0)
+    return new_img
+

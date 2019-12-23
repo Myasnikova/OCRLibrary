@@ -1,17 +1,13 @@
-from tqdm import tqdm
-
-from library.core import *
-from library.exceptions import WrongRank, WrongWindowSize
-
-from library.BinaryImage import BinaryImage
+from exceptions import WrongRank, WrongWindowSize
+from BinaryImage import *
 
 
 class FilteredImage(LabImage):
     """
     Класс осуществляющий фильтрацию переданного на вход изображения следующими методами:
-        - медианная фильтрация
-        - ранговая фильтрация
-        - взвешанная ранговая фильтрация
+        - :meth:`~FilteredImage.median_filter` -- медианная фильтрация
+        - :meth:`~FilteredImage.rank_filter` -- ранговая фильтрация
+        - :meth:`~FilteredImage.weighted_rank_filter` -- взвешанная ранговая фильтрация
     """
     def __init__(self, path=None, image=None):
         """
@@ -19,16 +15,19 @@ class FilteredImage(LabImage):
 
         :param path: путь до изображения
         :type path: str or None
-        :param image: экземпляр класса LabImage
-        :type image: LabImage or None
+        :param image: экземпляр класса :class:`~core.LabImage`
+        :type image: :class:`~core.LabImage` or None
         """
         super(FilteredImage, self).__init__(path=path, image=image)
 
         self.filtered_matrix = None
         if getattr(self, 'bin_matrix', None) is None:
             # TODO надо бы выбрать способ бинаризации по умолчанию
-            self.bin_matrix = BinaryImage(path=path, image=image).eikvil_binarization().bin_matrix
-            # self.bin_matrix = self.grayscale_matrix
+            img = get_bin_by_tresh(self.gray_image)
+            arr = np.asarray(img, dtype=np.uint8)
+            self.bin_matrix = arr
+            #self.bin_matrix = BinaryImage(path=path, image=image).cristian_binarisation().bin_matrix
+            #self.bin_matrix = self.grayscale_matrix
 
     def median_filter(self, wsize=3):
         """
@@ -37,7 +36,7 @@ class FilteredImage(LabImage):
         :param wsize: размер окна фильтрации
         :type wsize: int
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         :raises: WrongWindowSize
         """
@@ -79,7 +78,7 @@ class FilteredImage(LabImage):
         :param wsize: размер окна фильтрации (поддерживаются только окна размера 3 или 5)
         :type wsize: int
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         :raises: WrongWindowSize
         """
@@ -134,7 +133,7 @@ class FilteredImage(LabImage):
         :param wsize: размер окна фильтрации (поддерживаются только окна размера 3 или 5)
         :type wsize: int
 
-        :return: LabImage -- объект изображения
+        :return: :class:`~core.LabImage` -- объект изображения
 
         :raises: WrongWindowSize, WrongRank
         """
@@ -162,11 +161,3 @@ class FilteredImage(LabImage):
         self.result = Image.fromarray(self.filtered_matrix, 'L')
 
         return self
-
-def test():
-    im = LabImage("../sample_2.bmp")
-    im = FilteredImage(image=im)
-    im.median_filter(wsize=7)
-    # im.weighted_rank_filter(3, [[1, 2, 1], [2, 4, 2], [1, 2, 1]], 10)
-    im.show()
-
