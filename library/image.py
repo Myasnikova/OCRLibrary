@@ -41,6 +41,16 @@ class OCRImage:
         """
         self.lab_image.save(path)
 
+    def get_grayscale_image(self):
+        """
+        Возвращает изображение в оттенках серого
+        :return: :class:`~PIL.Image` -- изображение в оттенках серого
+
+        :raises: ValueError
+        """
+        self.result = self.lab_image.gray_image
+        return self.result
+
 
     def get_binary_image(self, method=None, _rsize=3, _Rsize=15, _eps=15, _w_size=15, _k=0.5):
         """
